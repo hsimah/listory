@@ -5,6 +5,9 @@ const htmlPlugin = new HtmlWebPackPlugin({
 });
 
 module.exports = {
+  devServer: {
+    historyApiFallback: true,
+  },
   entry: './client/src/index.js',
   module: {
     rules: [

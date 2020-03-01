@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import Lists from './lists/Lists';
 import List from './list/List';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,7 +51,16 @@ export default function Dashboard() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
-          {'Router to go here'}
+          <Router>
+          <Switch>
+            <Route path='/create'>
+              <List />
+            </Route>
+            <Route path='/'>
+              <Lists />
+            </Route>
+          </Switch>
+          </Router>
         </Container>
       </main>
     </div>
