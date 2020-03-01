@@ -10,6 +10,7 @@ const GET_LISTS = gql`
 query Lists {
   lists {
     name
+    type
     id
   }
 }
@@ -36,7 +37,7 @@ function Lists() {
       </Typography>
     </Grid>
     <Grid item xs={12}>
-      {data.lists.map((l) => <List name={l.name} id={l.id} />)}
+      {data.lists.map((l) => <List key={l.id} name={l.name} id={l.id} />)}
     </Grid>
   </Grid>;
 }
