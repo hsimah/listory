@@ -1,20 +1,5 @@
 const loki = require('lokijs');
 
-const db = new loki('./listory-db.json', { autosave: true, autosaveInterval: 5000, autoload: true });
-
-// var db = new loki("quickstart.db", {
-//   autoload: true,
-//   autoloadCallback : databaseInitialize,
-//   autosave: true, 
-//   autosaveInterval: 4000
-// });
-
-// function databaseInitialize() {
-//   if (!db.getCollection("users")) {
-//     db.addCollection("users");
-//   }
-// }
-
 class Api {
   constructor({
     name,
@@ -23,7 +8,19 @@ class Api {
       unique: ['name'],
       autoupdate: true,
     };
-    this.collection = db.getCollection(name) || db.addCollection(name, config);
+
+    this.db = new loki('./listory-db.json', {
+      autosave: true,
+      autosaveInterval: 5000,
+      autoload: true,
+      autoloadCallback: () => {
+        this.collection = this.db.getCollection(name);
+        if (this.collection == null) {
+          this.collection = this.db.addCollection(name, config);
+          this.db.addCollection(name);
+        }
+      },
+    });
   }
 
   add({ name, ...list }) {
@@ -33,10 +30,12 @@ class Api {
       return;
     }
 
-    return this.collection.insert({
+    const item = this.collection.insert({
       name,
       ...list,
     });
+    this.db.saveDatabase();
+    return item;
   }
 
   update({ name, ...list }) {
@@ -47,6 +46,7 @@ class Api {
     }
 
     Object.assign(existing, list);
+    this.db.saveDatabase();
     return existing;
   }
 

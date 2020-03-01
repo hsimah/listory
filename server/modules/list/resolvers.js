@@ -6,8 +6,8 @@ const resolvers = {
     list: () => list.getOne(),
   },
   Mutation: {
-    addList: () => list.add(),
-    updateList: () => list.update(),
+    addList: (_, item) => list.add(item),
+    updateList: (_, item) => list.update(item),
   },
   List: {
     id: (node) => node.$loki,
