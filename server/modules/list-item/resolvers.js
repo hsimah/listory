@@ -2,12 +2,12 @@ const listItem = require('./list-item');
 
 const resolvers = {
   Query: {
-    listItems: listItem.get,
-    listItem: listItem.getOne,
+    listItems: () => listItem.get(),
+    listItem: () => listItem.getOne(),
   },
   Mutation: {
-    addListItem: listItem.add,
-    updateListItem: listItem.update,
+    addListItem: () => listItem.add(),
+    updateListItem: () => listItem.update(),
   },
   ListItem: {
     id: (node) => node.$loki,

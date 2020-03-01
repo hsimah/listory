@@ -2,12 +2,12 @@ const list = require('./list');
 
 const resolvers = {
   Query: {
-    lists: list.get,
-    list: list.getOne,
+    lists: () => list.get(),
+    list: () => list.getOne(),
   },
   Mutation: {
-    addList: list.add,
-    updateList: list.update,
+    addList: () => list.add(),
+    updateList: () => list.update(),
   },
   List: {
     id: (node) => node.$loki,

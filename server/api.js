@@ -1,6 +1,19 @@
 const loki = require('lokijs');
 
-const db = new loki('listory.db');
+const db = new loki('./listory-db.json', { autosave: true, autosaveInterval: 5000, autoload: true });
+
+// var db = new loki("quickstart.db", {
+//   autoload: true,
+//   autoloadCallback : databaseInitialize,
+//   autosave: true, 
+//   autosaveInterval: 4000
+// });
+
+// function databaseInitialize() {
+//   if (!db.getCollection("users")) {
+//     db.addCollection("users");
+//   }
+// }
 
 class Api {
   constructor({
@@ -42,7 +55,7 @@ class Api {
   }
 
   get(params) {
-    return this.collection.find(params);
+    return params != null ? this.collection.find(params) : this.collection.data;
   }
 }
 
