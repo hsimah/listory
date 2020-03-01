@@ -104,9 +104,7 @@ function List(props) {
     validationSchema,
     handleSubmit: (payload, { setSubmitting }) => {
       addList({
-        variables: {
-          ...payload,
-        },
+        variables: payload,
       });
       setSubmitting(false);
     },

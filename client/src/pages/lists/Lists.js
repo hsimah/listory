@@ -17,10 +17,11 @@ query Lists {
 `;
 
 function List(props) {
-  const { id, name } = props;
+  const { id, name, type } = props;
 
   return <>
     <Typography>Name: {name}</Typography>
+    <Typography>Type: {type}</Typography>
     <Typography>ID: {id}</Typography>
   </>;
 }
