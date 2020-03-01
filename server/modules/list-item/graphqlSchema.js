@@ -11,7 +11,7 @@ const typeDefs = gql`
     listItem(name: String!): ListItem
   }
   extend type Mutation {
-    addListItem(name: String!, type: ListType!): ListItem!
+    addListItem(name: String!): ListItem!
     updateListItem(name: String!): ListItem!
   }
 `;

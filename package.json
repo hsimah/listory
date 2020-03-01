@@ -4,7 +4,7 @@
   "description": "",
   "main": "handler.js",
   "scripts": {
-    "server": "nodemon ./server/server.js",
+    "server": "nodemon ./server/server.js --ignore listory-db.json",
     "client": "webpack-dev-server --mode development --open",
     "dev": "concurrently \"npm run client\" \"npm run server\"",
     "lint": "./node_modules/.bin/eslint --fix --ext .js --ext .jsx ."
