@@ -3,12 +3,18 @@ const { gql } = require('apollo-server-express');
 // Construct a schema using GraphQL schema language
 const typeDefs = gql`
   type ListItem {
+    name: String!
+    id: String
+    slug: String
+  }
+  input ListItemWhereArgs {
     name: String
     id: String
+    slug: String
   }
   extend type Query {
-    listItems: [ListItem]
-    listItem(name: String!): ListItem
+    listItems(where: ListItemWhereArgs): [ListItem]
+    listItem(where: ListItemWhereArgs): ListItem
   }
   extend type Mutation {
     addListItem(name: String!): ListItem!

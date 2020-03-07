@@ -2,8 +2,8 @@ const listItem = require('./list-item');
 
 const resolvers = {
   Query: {
-    listItems: () => listItem.get(),
-    listItem: () => listItem.getOne(),
+    listItems: (_, { where }) => listItem.get(where),
+    listItem: (_, { where }) => listItem.getOne(where),
   },
   Mutation: {
     addListItem: (_, item) => listItem.add(item),

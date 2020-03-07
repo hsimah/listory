@@ -8,18 +8,31 @@ const typeDefs = gql`
     TRANSIENT
   }
   type List {
-    name: String
-    id: String
+    name: String!
+    id: Int!
     type: ListType
     archived: Boolean
+    listItems: [ListItem]
+    slug: String!
+  }
+  input ListInput {
+    id: Int
+    type: ListType
+    archived: Boolean
+    listItems: [String]
+  }
+  input ListWhereArgs {
+    id: Int
+    name: String
+    slug: String
   }
   extend type Query {
-    lists: [List],
-    list(name: String!): ListItem,
+    lists(where: ListWhereArgs): [List],
+    list(where: ListWhereArgs): ListItem,
   },
   extend type Mutation {
-    addList(name: String!, type: ListType!): List!
-    updateList(name: String!): List!
+    addList(name: String!): List!
+    updateList(list: ListInput): List!
   }
 `;
 

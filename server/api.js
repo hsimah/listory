@@ -5,7 +5,7 @@ class Api {
     name,
   }) {
     const config = {
-      unique: ['name'],
+      unique: ['name', 'slug'],
       autoupdate: true,
     };
 
@@ -50,12 +50,38 @@ class Api {
     return existing;
   }
 
-  getOne({ name }) {
-    return this.collection.by('name', name);
+  getOne(params) {
+    if (params == null) {
+      return null;
+    }
+
+    const { id, slug } = params;
+    if (id != null) {
+      return this.collection.findOne(id);
+    }
+    return this.collection.findOne({ 'slug': slug });
   }
 
   get(params) {
-    return params != null ? this.collection.find(params) : this.collection.data;
+    if (params == null || Object.keys(params).length === 0) {
+      return this.collection.data;
+    }
+
+    const { id, name, slug } = params;
+
+    if (id != null) {
+      return this.collection.find({ '$loki': id });
+    }
+
+    if (slug != null) {
+      return this.collection.where((i) => i.slug.contains(params.slug));
+    }
+
+    if (name != null) {
+      return this.collection.where((i) => i.name.contains(params.name));
+    }
+
+    return [];
   }
 }
 
