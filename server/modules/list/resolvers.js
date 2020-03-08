@@ -1,4 +1,5 @@
 const list = require('./list');
+const listItems = require('../list-item/list-item');
 
 const resolvers = {
   Query: {
@@ -14,7 +15,12 @@ const resolvers = {
     type: (node) => node.type,
     name: (node) => node.name,
     archived: (node) => node.archived,
-    listItems: (node) => node.listItems || [],
+    listItems: (node) => {
+      if (node.listItems != null) {
+        return listItems.get({ id: node.listItems });
+      }
+      return [];
+    },
     slug: (node) => node.slug,
   },
 };

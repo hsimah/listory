@@ -28,7 +28,7 @@ const typeDefs = gql`
   }
   extend type Query {
     lists(where: ListWhereArgs): [List],
-    list(where: ListWhereArgs): ListItem,
+    list(where: ListWhereArgs): List,
   },
   extend type Mutation {
     addList(name: String!): List!

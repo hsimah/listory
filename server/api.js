@@ -70,7 +70,8 @@ class Api {
     const { id, name, slug } = params;
 
     if (id != null) {
-      return this.collection.find({ '$loki': id });
+      const query = Array.isArray(id) ? {'$loki': {'$in': id}} :{ '$loki': id };
+      return this.collection.find(query);
     }
 
     if (slug != null) {
