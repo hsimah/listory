@@ -89,6 +89,7 @@
     "react/prop-types": 0,
     "react/react-in-jsx-scope": 0,
     "react/self-closing-comp": 1,
-    "react/sort-comp": 1
+    "react/sort-comp": 1,
+    "jsx-quotes": ["error", "prefer-single"]
   }
 }

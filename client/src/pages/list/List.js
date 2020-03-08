@@ -1,27 +1,36 @@
-/* eslint-disable react/no-multi-comp */
-import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Select from '@material-ui/core/Select';
+import Grid from '@material-ui/core/Grid';
+import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import gql from 'graphql-tag';
 import React from 'react';
-import { useMutation } from 'react-apollo';
-import * as Yup from 'yup';
-import { withFormik } from 'formik';
+import { useMutation, useQuery } from 'react-apollo';
+import { useParams } from 'react-router-dom';
+import ListItemInput from './ListItemInput';
+import ListItem from './ListItem';
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Name is mandatory'),
-  type: Yup.string().required('Type is mandatory'),
-});
-
-const ADD_LIST = gql`
-mutation AddList($name: String!, $type: ListType!) {
-  addList(name: $name, type: $type) {
+const UPDATE_LIST = gql`
+mutation UpdateList($list: ListInput) {
+  updateList(list: $list) {
     id
     name
+    type
+    slug
+  }
+}
+`;
+
+const GET_LIST = gql`
+query List($slug: String!) {
+  list(where: {
+    slug: $slug
+  }) {
+    id
+    name
+    slug
     type
   }
 }
@@ -33,64 +42,47 @@ query Lists {
     name
     type
     id
+    slug
+    listItems
   }
 }
 `;
 
-function ListForm(props) {
-  const {
-    values,
-    touched,
-    errors,
-    dirty,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-    handleReset,
-    isSubmitting,
-  } = props;
+const useStyles = makeStyles((theme) => ({
+  root: {
+    '& .MuiTextField-root': {
+      margin: theme.spacing(1),
+      width: 200,
+    },
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 200,
+  },
+}));
 
-  return <form onSubmit={handleSubmit}>
-    <Paper>
-      <div>
-        <FormControl component='fieldset'>
-          <TextField label="Name" id="name" value={values.name} onChange={handleChange} />
-        </FormControl>
-      </div>
-      <div>
-        <FormControl component='fieldset'>
-          <FormLabel>{'Type'}</FormLabel>
-          <Select
-              id="type"
-              name="type"
-              value={values.type}
-              onChange={handleChange}
-          >
-            <MenuItem value={'MASTER'} name='type'>Master</MenuItem>
-            <MenuItem value={'SUB'} name='type'>Sub</MenuItem>
-            <MenuItem value={'TRANSIENT'} name='type'>Transient</MenuItem>
-          </Select>
-        </FormControl>
-      </div>
-      <div>
-        <Button
-            variant='contained'
-            color='secondary'
-            onClick={handleSubmit}
-            type='submit'
-        >
-          {'Test Your Knowledge'}
-        </Button>
-      </div>
-    </Paper>
-  </form>;
-}
+const defaultData = {
+  list: {
+    listItems: [],
+  },
+};
 
-function List(props) {
+function List() {
+  let { slug } = useParams();
+  const classes = useStyles();
+  const { data = defaultData, error, loading } = useQuery(GET_LIST,
+    {
+      variables: {
+        slug,
+      },
+    });
   const [
-    addList,
-    { loading, error },
-  ] = useMutation(ADD_LIST,{
+    updateList,
+    {
+      loading: mutationLoading,
+      error: mutationError,
+    },
+  ] = useMutation(UPDATE_LIST, {
     update(cache, { data: { addList } }) {
       const { lists } = cache.readQuery({ query: GET_LISTS });
       cache.writeQuery({
@@ -100,20 +92,43 @@ function List(props) {
     },
   });
 
-  const formikEnhancer = withFormik({
-    validationSchema,
-    handleSubmit: (payload, { setSubmitting }) => {
-      addList({
-        variables: payload,
-      });
-      setSubmitting(false);
-    },
-    displayName: 'Add List',
-  });
+  const handleChange = (e) => {
+    const entity = Object.assign({}, data.list, e.target.value);
+    updateList({
+      variables: {
+        where: entity,
+      },
+    });
+  };
 
-  const ListFormik = formikEnhancer(ListForm);
+  if (loading) return null;
 
-  return <ListFormik type='' name='' />;
+  return <Grid container justify='center'>
+    <Grid item xs={8}>
+      <Typography variant='h3'>
+        {data.list.name}
+      </Typography>
+    </Grid>
+    <Grid item xs={8}>
+      <FormControl component='fieldset' className={classes.formControl}>
+        <InputLabel>{'Type'}</InputLabel>
+        <Select
+            id='type'
+            name='type'
+            value={data.list.type}
+            onChange={handleChange}
+        >
+          <MenuItem value={'MASTER'} name='type'>Master</MenuItem>
+          <MenuItem value={'SUB'} name='type'>Sub</MenuItem>
+          <MenuItem value={'TRANSIENT'} name='type'>Transient</MenuItem>
+        </Select>
+      </FormControl>
+      <ListItemInput value={data.list.listItems} onChange={handleChange} />
+    </Grid>
+    <Grid item xs={8}>
+      <ListItem />
+    </Grid>
+  </Grid>;
 }
 
 

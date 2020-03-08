@@ -2,15 +2,14 @@ import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
 import AddCircle from '@material-ui/icons/AddCircle';
-import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import Lists from './lists/Lists';
+import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 import List from './list/List';
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import Lists from './lists/Lists';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,12 +48,12 @@ export default function Dashboard() {
     <div className={classes.root}>
       <Router>
         <CssBaseline />
-        <AppBar position="absolute" className={classes.appBar}>
+        <AppBar position='absolute' className={classes.appBar}>
           <Toolbar>
-            <Button component={Link} to="/" color="inherit">Listory</Button>
+            <Button component={Link} to='/' color='inherit'>Listory</Button>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-              <IconButton component={Link} to="/create" color='inherit'>
+              <IconButton component={Link} to='/create' color='inherit'>
                 <AddCircle />
               </IconButton>
             </div>
@@ -62,9 +61,9 @@ export default function Dashboard() {
         </AppBar>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
+          <Container maxWidth='lg' className={classes.container}>
             <Switch>
-              <Route path='/create'>
+              <Route path='/:slug'>
                 <List />
               </Route>
               <Route path='/'>
