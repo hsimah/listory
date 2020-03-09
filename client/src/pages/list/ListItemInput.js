@@ -47,9 +47,12 @@ function ListItemInput({ onChange }) {
   let { slug } = useParams();
   const classes = styles();
 
-  const [value, setValue] = React.useState(null);
   const { data: listData, error: listError, loading: listLoading } = useQuery(GET_LIST, { variables: { slug } });
   const { data: listItemData, error, loading } = useQuery(GET_LIST_ITEMS);
+
+  const listItemIds = React.useMemo(() => {
+    return (listData.list.listItems || []).map((l) => l.id);
+  }, [listData.list.listItems]);
 
   const [addListItem] = useMutation(
     ADD_LIST_ITEM,
@@ -64,33 +67,27 @@ function ListItemInput({ onChange }) {
         });
       },
       onCompleted(data) {
-        const ids = (listData.list.listItems || []).map((l) => l.id);
         onChange({
           variables: {
             list: {
               slug,
-              listItems: [...ids, data.addListItem.id],
+              listItems: [...listItemIds, data.addListItem.id],
             },
           },
         });
       },
     });
 
-
-
   if (listLoading) return null;
 
-
   return <Autocomplete
-    value={value}
     onChange={(_, newValue) => {
       if (newValue?.id != null) {
-        const ids = (listData.list.listItems || []).map((l) => l.id);
         onChange({
           variables: {
             list: {
               slug,
-              listItems: [...ids, newValue.id],
+              listItems: [...listItemIds, newValue.id],
             },
           },
         });
@@ -117,7 +114,6 @@ function ListItemInput({ onChange }) {
     }}
     options={listItemData?.listItems ?? []}
     getOptionLabel={(option) => {
-      // e.g value selected with enter, right from the input
       if (typeof option === 'string') {
         return option;
       }
@@ -127,7 +123,6 @@ function ListItemInput({ onChange }) {
       return option.name;
     }}
     renderOption={(option) => option.name}
-    style={{ width: 300 }}
     freeSolo
     renderInput={(params) =>
       <TextField {...params} label='Add list items' />

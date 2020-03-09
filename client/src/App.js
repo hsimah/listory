@@ -1,17 +1,14 @@
-import React, { Component } from 'react';
-
+import React from 'react';
 import { ApolloProvider } from 'react-apollo';
-import Page from './pages/Page';
 import apolloClient from './config/createApolloClient';
+import Page from './pages/Page';
 
-class App extends Component {
-  render() {
-    return (
-      <ApolloProvider client={apolloClient}>
-        <Page />
-      </ApolloProvider>
-    );
-  }
+function App() {
+  return (
+    <ApolloProvider client={apolloClient}>
+      <Page />
+    </ApolloProvider>
+  );
 }
 
 export default App;

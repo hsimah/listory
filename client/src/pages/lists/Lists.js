@@ -28,7 +28,7 @@ function ListLink({ id, name, listItems = [], slug }) {
   const renderLink = React.useMemo(
     () =>
       // eslint-disable-next-line react/display-name
-      React.forwardRef((linkProps, ref) => 
+      React.forwardRef((linkProps, ref) =>
         <Link ref={ref} to={slug} {...linkProps} />
       ),
     [slug],

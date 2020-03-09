@@ -44,41 +44,18 @@ query List($slug: String!) {
 }
 `;
 
-const GET_LISTS = gql`
-query Lists {
-  lists {
-    name
-    type
-    id
-    slug
-    listItems
-  }
-}
-`;
-
 const useStyles = makeStyles((theme) => ({
-  root: {
-    '& .MuiTextField-root': {
-      margin: theme.spacing(1),
-      width: 200,
-    },
-  },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 200,
   },
 }));
 
-const defaultData = {
-  list: {
-    listItems: [],
-  },
-};
-
 function List() {
   let { slug } = useParams();
   const classes = useStyles();
-  const { data = defaultData, error, loading } = useQuery(GET_LIST,
+  const { data, error, loading } = useQuery(
+    GET_LIST,
     {
       variables: {
         slug,
@@ -88,14 +65,11 @@ function List() {
   const [updateList] = useMutation(
     UPDATE_LIST,
     {
-      update(
-        cache,
-        { data: { updateList } }) {
-        const { list: listData } = cache.readQuery({ query: GET_LIST, variables: { slug } });
-        const newList = Object.assign({}, listData, updateList);
+      update(cache, { data: { updateList } }) {
+        const { list } = cache.readQuery({ query: GET_LIST, variables: { slug } });
         cache.writeQuery({
           query: GET_LIST,
-          data: { list: newList },
+          data: { list: Object.assign({}, list, updateList) },
         });
       },
     });
@@ -113,6 +87,7 @@ function List() {
   };
 
   if (loading) return null;
+  if (error != null) return null;
 
   return <Grid container justify='center'>
     <Grid item xs={8}>
@@ -134,7 +109,9 @@ function List() {
           <MenuItem value={'TRANSIENT'} name='type'>Transient</MenuItem>
         </Select>
       </FormControl>
-      <ListItemInput onChange={updateList} />
+      <FormControl component='fieldset' className={classes.formControl}>
+        <ListItemInput onChange={updateList} />
+      </FormControl>
     </Grid>
     <Grid item xs={8}>
       <ListItem items={data.list.listItems} onChange={updateList} />
