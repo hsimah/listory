@@ -8,47 +8,19 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListIcon from '@material-ui/icons/List';
-import gql from 'graphql-tag';
 import React from 'react';
-import { useQuery } from 'react-apollo';
 import { useParams } from 'react-router-dom';
-
-const GET_LIST_ITEMS = gql`
-query ListItems($slug: String) {
-  list(where: {
-    slug: $slug
-  }) {
-    id
-    listItems {
-      id
-      name
-      slug
-    }
-  }
-}
-`;
 
 const styles = makeStyles((theme) => ({
 
 }));
 
-function ListItem() {
+function ListItem({ items, onChange }) {
   const classes = styles();
   let { slug } = useParams();
-  const { data, error, loading } = useQuery(
-    GET_LIST_ITEMS,
-    {
-      variables: {
-        slug,
-      },
-    });
-
-  if (loading) return null;
-
-  if (error != null) return null;
 
   return <List>
-    {data.list.listItems.map((l) =>
+    {items.map((l) =>
       <ListItemContainer key={l.id}>
         <ListItemAvatar>
           <Avatar>
@@ -57,7 +29,22 @@ function ListItem() {
         </ListItemAvatar>
         <ListItemText primary={l.name} />
         <ListItemSecondaryAction>
-          <IconButton edge='end' color='secondary'>
+          <IconButton edge='end' color='secondary' onClick={() => {
+            const listItems = items.reduce((a, c) => {
+              if (c.id !== l.id) {
+                a.push(c.id);
+              }
+              return a;
+            }, []);
+            onChange({
+              variables: {
+                list: {
+                  slug,
+                  listItems,
+                },
+              },
+            });
+          }}>
             <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>

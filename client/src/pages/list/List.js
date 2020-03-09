@@ -9,16 +9,20 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { useMutation, useQuery } from 'react-apollo';
 import { useParams } from 'react-router-dom';
-import ListItemInput from './ListItemInput';
 import ListItem from './ListItem';
+import ListItemInput from './ListItemInput';
 
 const UPDATE_LIST = gql`
-mutation UpdateList($list: ListInput) {
+mutation UpdateList($list: ListInput!) {
   updateList(list: $list) {
     id
     name
     type
     slug
+    listItems {
+      id
+      name
+    }
   }
 }
 `;
@@ -32,6 +36,10 @@ query List($slug: String!) {
     name
     slug
     type
+    listItems {
+      id
+      name
+    }
   }
 }
 `;
@@ -76,27 +84,30 @@ function List() {
         slug,
       },
     });
-  const [
-    updateList,
-    {
-      loading: mutationLoading,
-      error: mutationError,
-    },
-  ] = useMutation(UPDATE_LIST, {
-    update(cache, { data: { addList } }) {
-      const { lists } = cache.readQuery({ query: GET_LISTS });
-      cache.writeQuery({
-        query: GET_LISTS,
-        data: { lists: lists.concat([addList]) },
-      });
-    },
-  });
 
-  const handleChange = (e) => {
-    const entity = Object.assign({}, data.list, e.target.value);
+  const [updateList] = useMutation(
+    UPDATE_LIST,
+    {
+      update(
+        cache,
+        { data: { updateList } }) {
+        const { list: listData } = cache.readQuery({ query: GET_LIST, variables: { slug } });
+        const newList = Object.assign({}, listData, updateList);
+        cache.writeQuery({
+          query: GET_LIST,
+          data: { list: newList },
+        });
+      },
+    });
+
+  const handleChange = ({ target: { name, value } }) => {
+    const list = {
+      slug,
+      [name]: value,
+    };
     updateList({
       variables: {
-        where: entity,
+        list,
       },
     });
   };
@@ -113,20 +124,20 @@ function List() {
       <FormControl component='fieldset' className={classes.formControl}>
         <InputLabel>{'Type'}</InputLabel>
         <Select
-            id='type'
-            name='type'
-            value={data.list.type}
-            onChange={handleChange}
+          id='type'
+          name='type'
+          value={data.list.type}
+          onChange={handleChange}
         >
           <MenuItem value={'MASTER'} name='type'>Master</MenuItem>
           <MenuItem value={'SUB'} name='type'>Sub</MenuItem>
           <MenuItem value={'TRANSIENT'} name='type'>Transient</MenuItem>
         </Select>
       </FormControl>
-      <ListItemInput value={data.list.listItems} onChange={handleChange} />
+      <ListItemInput onChange={updateList} />
     </Grid>
     <Grid item xs={8}>
-      <ListItem />
+      <ListItem items={data.list.listItems} onChange={updateList} />
     </Grid>
   </Grid>;
 }

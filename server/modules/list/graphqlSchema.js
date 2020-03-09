@@ -17,9 +17,10 @@ const typeDefs = gql`
   }
   input ListInput {
     id: Int
+    slug: String!,
     type: ListType
     archived: Boolean
-    listItems: [String]
+    listItems: [Int]
   }
   input ListWhereArgs {
     id: Int
@@ -32,7 +33,7 @@ const typeDefs = gql`
   },
   extend type Mutation {
     addList(name: String!): List!
-    updateList(list: ListInput): List!
+    updateList(list: ListInput!): List!
   }
 `;
 

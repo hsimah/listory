@@ -38,8 +38,8 @@ class Api {
     return item;
   }
 
-  update({ name, ...list }) {
-    const existing = this.collection.by('name', name);
+  update({ slug, ...list }) {
+    const existing = this.collection.findOne({ 'slug': slug });
     if (existing == null) {
       // throw error
       return;

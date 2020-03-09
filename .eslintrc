@@ -31,7 +31,10 @@
       1,
       "always"
     ],
-    "eqeqeq": ["error", "smart"],
+    "eqeqeq": [
+      "error",
+      "smart"
+    ],
     "comma-dangle": [
       1,
       {
@@ -70,7 +73,10 @@
     "react/jsx-boolean-value": 1,
     "react/jsx-closing-bracket-location": 0,
     "react/jsx-curly-spacing": 1,
-    "react/jsx-indent-props": 1,
+    "react/jsx-indent-props": [
+      2,
+      2
+    ],
     "react/jsx-max-props-per-line": 0,
     "react/jsx-no-duplicate-props": 1,
     "react/jsx-no-literals": 0,
@@ -90,6 +96,13 @@
     "react/react-in-jsx-scope": 0,
     "react/self-closing-comp": 1,
     "react/sort-comp": 1,
-    "jsx-quotes": ["error", "prefer-single"]
+    "jsx-quotes": [
+      1,
+      "prefer-single"
+    ],
+    "object-shorthand": [
+      1,
+      "always"
+    ]
   }
 }
