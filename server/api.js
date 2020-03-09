@@ -23,8 +23,8 @@ class Api {
     });
   }
 
-  add({ name, ...list }) {
-    const existing = this.collection.by('name', name);
+  add({ name, ...rest }) {
+    const existing = this.collection.findOne({ name });
     if (existing != null) {
       // throw error
       return;
@@ -32,20 +32,20 @@ class Api {
 
     const item = this.collection.insert({
       name,
-      ...list,
+      ...rest,
     });
     this.db.saveDatabase();
     return item;
   }
 
-  update({ slug, ...list }) {
-    const existing = this.collection.findOne({ 'slug': slug });
+  update({ slug, ...rest }) {
+    const existing = this.collection.findOne({ slug });
     if (existing == null) {
       // throw error
       return;
     }
 
-    Object.assign(existing, list);
+    Object.assign(existing, rest);
     this.db.saveDatabase();
     return existing;
   }
@@ -59,7 +59,7 @@ class Api {
     if (id != null) {
       return this.collection.findOne(id);
     }
-    return this.collection.findOne({ 'slug': slug });
+    return this.collection.findOne({ slug });
   }
 
   get(params) {
@@ -70,7 +70,7 @@ class Api {
     const { id, name, slug } = params;
 
     if (id != null) {
-      const query = Array.isArray(id) ? {'$loki': {'$in': id}} :{ '$loki': id };
+      const query = Array.isArray(id) ? { '$loki': { '$in': id } } : { '$loki': id };
       return this.collection.find(query);
     }
 

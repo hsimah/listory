@@ -63,8 +63,16 @@ function ListItemInput({ onChange }) {
           data: { listItems: listItems.concat([addListItem]) },
         });
       },
-      onCompleted: (data) => {
-        setValue(null);
+      onCompleted(data) {
+        const ids = (listData.list.listItems || []).map((l) => l.id);
+        onChange({
+          variables: {
+            list: {
+              slug,
+              listItems: [...ids, data.addListItem.id],
+            },
+          },
+        });
       },
     });
 
@@ -76,7 +84,7 @@ function ListItemInput({ onChange }) {
   return <Autocomplete
     value={value}
     onChange={(_, newValue) => {
-      if (newValue.id != null) {
+      if (newValue?.id != null) {
         const ids = (listData.list.listItems || []).map((l) => l.id);
         onChange({
           variables: {
@@ -85,8 +93,12 @@ function ListItemInput({ onChange }) {
               listItems: [...ids, newValue.id],
             },
           },
-          onCompleted: (data) => {
-            setValue(null);
+        });
+      }
+      if (newValue?.inputValue) {
+        addListItem({
+          variables: {
+            name: newValue.inputValue,
           },
         });
       }
@@ -118,7 +130,7 @@ function ListItemInput({ onChange }) {
     style={{ width: 300 }}
     freeSolo
     renderInput={(params) =>
-      <TextField {...params} label='Free solo dialog' variant='outlined' />
+      <TextField {...params} label='Add list items' />
     }
   />;
 }

@@ -6,7 +6,7 @@ const resolvers = {
     listItem: (_, { where }) => listItem.getOne(where),
   },
   Mutation: {
-    addListItem: (_, { listItem: item }) => listItem.add(item),
+    addListItem: (_, item) => listItem.add(item),
     updateListItem: (_, { listItem: item }) => listItem.update(item),
   },
   ListItem: {
