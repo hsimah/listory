@@ -18,7 +18,6 @@ class Api {
         this.collection = this.db.getCollection(name);
         if (this.collection == null) {
           this.collection = this.db.addCollection(name, config);
-          this.db.addCollection(name);
         }
       },
     });
@@ -40,7 +39,7 @@ class Api {
     return item;
   }
 
-  update({ slug, ...rest }) {
+  update({ name: _, slug, ...rest }) {
     const existing = this.collection.findOne({ slug });
     if (existing == null) {
       // throw error
@@ -58,30 +57,33 @@ class Api {
     }
 
     const { id, slug } = params;
-    if (id != null) {
-      return this.collection.findOne(id);
-    }
-    return this.collection.findOne({ slug });
+    const query = id != null ? { $loki: id } : { slug };
+    
+    return this.collection.findOne(query);
   }
 
   get(params) {
     if (params == null || Object.keys(params).length === 0) {
-      return this.collection.data;
+      return this.collection.find({ archived: { $ne: true } });
     }
 
     const { id, name, slug } = params;
 
     if (id != null) {
       const query = Array.isArray(id) ? { '$loki': { '$in': id } } : { '$loki': id };
-      return this.collection.find(query);
+      return this.collection.find({ $and: [{ archived: { $ne: true } }, query] });
     }
 
     if (slug != null) {
-      return this.collection.where((i) => i.slug.contains(params.slug));
+      return this.collection.chain()
+        .find({ archived: { $ne: true } })
+        .where((i) => i.slug.contains(params.slug));
     }
 
     if (name != null) {
-      return this.collection.where((i) => i.name.contains(params.name));
+      return this.collection.chain()
+        .find({ archived: { $ne: true } })
+        .where((i) => i.name.contains(params.name));
     }
 
     return [];
