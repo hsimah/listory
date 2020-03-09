@@ -19,6 +19,8 @@ module.exports = {
           options: {
             presets: ['@babel/preset-react'],
             plugins: [
+              ['@babel/plugin-proposal-nullish-coalescing-operator'],
+              ['@babel/plugin-proposal-optional-chaining'],
               ['@babel/plugin-proposal-decorators', { 'legacy': true }],
             ],
           },

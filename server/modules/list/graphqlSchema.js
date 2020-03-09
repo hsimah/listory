@@ -1,6 +1,5 @@
 const { gql } = require('apollo-server-express');
 
-// Construct a schema using GraphQL schema language
 const typeDefs = gql`
   enum ListType {
     MASTER
@@ -8,18 +7,32 @@ const typeDefs = gql`
     TRANSIENT
   }
   type List {
-    name: String
-    id: String
+    name: String!
+    id: Int!
     type: ListType
     archived: Boolean
+    listItems: [ListItem]
+    slug: String!
+  }
+  input ListInput {
+    id: Int
+    slug: String!,
+    type: ListType
+    archived: Boolean
+    listItems: [Int]
+  }
+  input ListWhereArgs {
+    id: Int
+    name: String
+    slug: String
   }
   extend type Query {
-    lists: [List],
-    list(name: String!): ListItem,
+    lists(where: ListWhereArgs): [List],
+    list(where: ListWhereArgs): List,
   },
   extend type Mutation {
-    addList(name: String!, type: ListType!): List!
-    updateList(name: String!): List!
+    addList(name: String!): List!
+    updateList(list: ListInput!): List!
   }
 `;
 

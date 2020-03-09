@@ -5,7 +5,7 @@ class Api {
     name,
   }) {
     const config = {
-      unique: ['name'],
+      unique: ['name', 'slug'],
       autoupdate: true,
     };
 
@@ -23,8 +23,8 @@ class Api {
     });
   }
 
-  add({ name, ...list }) {
-    const existing = this.collection.by('name', name);
+  add({ name, ...rest }) {
+    const existing = this.collection.findOne({ name });
     if (existing != null) {
       // throw error
       return;
@@ -32,30 +32,57 @@ class Api {
 
     const item = this.collection.insert({
       name,
-      ...list,
+      ...rest,
     });
     this.db.saveDatabase();
     return item;
   }
 
-  update({ name, ...list }) {
-    const existing = this.collection.by('name', name);
+  update({ slug, ...rest }) {
+    const existing = this.collection.findOne({ slug });
     if (existing == null) {
       // throw error
       return;
     }
 
-    Object.assign(existing, list);
+    Object.assign(existing, rest);
     this.db.saveDatabase();
     return existing;
   }
 
-  getOne({ name }) {
-    return this.collection.by('name', name);
+  getOne(params) {
+    if (params == null) {
+      return null;
+    }
+
+    const { id, slug } = params;
+    if (id != null) {
+      return this.collection.findOne(id);
+    }
+    return this.collection.findOne({ slug });
   }
 
   get(params) {
-    return params != null ? this.collection.find(params) : this.collection.data;
+    if (params == null || Object.keys(params).length === 0) {
+      return this.collection.data;
+    }
+
+    const { id, name, slug } = params;
+
+    if (id != null) {
+      const query = Array.isArray(id) ? { '$loki': { '$in': id } } : { '$loki': id };
+      return this.collection.find(query);
+    }
+
+    if (slug != null) {
+      return this.collection.where((i) => i.slug.contains(params.slug));
+    }
+
+    if (name != null) {
+      return this.collection.where((i) => i.name.contains(params.name));
+    }
+
+    return [];
   }
 }
 
