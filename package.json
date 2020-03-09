@@ -29,7 +29,6 @@
     "apollo-server-express": "2.10.1",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "formik": "^2.1.4",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.3",
     "lokijs": "^1.5.8",
@@ -38,7 +37,7 @@
     "react-dom": "^16.6.3",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
-    "yup": "^0.28.1"
+    "to-slug-case": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.2.0",

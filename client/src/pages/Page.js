@@ -2,12 +2,11 @@ import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
-import AddCircle from '@material-ui/icons/AddCircle';
 import React from 'react';
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
+import AddListButton from '../components/AddList/AddListButton';
 import List from './list/List';
 import Lists from './lists/Lists';
 
@@ -53,9 +52,7 @@ export default function Page() {
             <Button component={Link} to='/' color='inherit'>Listory</Button>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-              <IconButton component={Link} to='/create' color='inherit'>
-                <AddCircle />
-              </IconButton>
+              <AddListButton />
             </div>
           </Toolbar>
         </AppBar>

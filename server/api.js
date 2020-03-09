@@ -1,4 +1,5 @@
 const loki = require('lokijs');
+const toSlugCase = require('to-slug-case');
 
 class Api {
   constructor({
@@ -29,8 +30,9 @@ class Api {
       // throw error
       return;
     }
-
+    const slug = toSlugCase(name);
     const item = this.collection.insert({
+      slug,
       name,
       ...rest,
     });
