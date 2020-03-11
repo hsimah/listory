@@ -1,8 +1,6 @@
 const loki = require('lokijs');
 const toSlugCase = require('to-slug-case');
 
-const mem = new loki.LokiMemoryAdapter();
-
 class Api {
   constructor({
     name,
@@ -12,26 +10,17 @@ class Api {
       autoupdate: true,
     };
 
-    try {
-      this.db = new loki(`listory-${Date.now()}.json`, {
-        adapter: mem,
-        // autosave: true,
-        // autosaveInterval: 5000,
-        // autoload: true,
-        // autoloadCallback: () => {
-        //   this.collection = this.db.getCollection(name);
-        //   if (this.collection == null) {
-        //     this.collection = this.db.addCollection(name, config);
-        //   }
-        // },
-      });
-      this.collection = this.db.getCollection(name);
-      if (this.collection == null) {
-        this.collection = this.db.addCollection(name, config);
-      }
-    } catch (e) {
-      console.error(e);
-    }
+    this.db = new loki('/tmp/listory.json', {
+      // autosave: true,
+      // autosaveInterval: 5000,
+      autoload: true,
+      autoloadCallback: () => {
+        this.collection = this.db.getCollection(name);
+        if (this.collection == null) {
+          this.collection = this.db.addCollection(name, config);
+        }
+      },
+    });
   }
 
   add({ name, ...rest }) {
