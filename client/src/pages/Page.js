@@ -49,7 +49,9 @@ export default function Page() {
         <CssBaseline />
         <AppBar position='absolute' className={classes.appBar}>
           <Toolbar>
-            <Button component={Link} to='/' color='inherit'>Listory</Button>
+            <Button component={Link} to='/' color='inherit'>
+              {'Listory'}
+            </Button>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
               <AddListButton />

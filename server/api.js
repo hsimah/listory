@@ -1,26 +1,16 @@
-const loki = require('lokijs');
 const toSlugCase = require('to-slug-case');
 
 class Api {
   constructor({
+    db,
     name,
   }) {
-    const config = {
-      unique: ['name', 'slug'],
-      autoupdate: true,
-    };
+    this.db = db;
+    this.name = name;
+  }
 
-    this.db = new loki('./listory-db.json', {
-      autosave: true,
-      autosaveInterval: 5000,
-      autoload: true,
-      autoloadCallback: () => {
-        this.collection = this.db.getCollection(name);
-        if (this.collection == null) {
-          this.collection = this.db.addCollection(name, config);
-        }
-      },
-    });
+  get collection() {
+    return this.db.getCollection(this.name) || this.db.addCollection(this.name);
   }
 
   add({ name, ...rest }) {
@@ -58,7 +48,7 @@ class Api {
 
     const { id, slug } = params;
     const query = id != null ? { $loki: id } : { slug };
-    
+
     return this.collection.findOne(query);
   }
 
