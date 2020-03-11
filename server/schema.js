@@ -1,10 +1,18 @@
-const { gql } = require('apollo-server-express');
-const list = require('./modules/list/graphqlSchema');
-const listItem = require('./modules/list-item/graphqlSchema');
+const { typeDefs: List, resolvers: listResolvers } = require('./modules/list/schema');
+const { typeDefs: ListItem, resolvers: listItemResolvers } = require('./modules/list-item/schema');
+const { makeExecutableSchema } = require('graphql-tools');
+const merge = require('lodash.merge');
 
-const root = gql`
-  type Query {root:String}
-  type Mutation {root:String}
+const Root = `
+  type Query {
+    _empty: String
+  }
+  type Mutation {
+    _empty: String
+  }
 `;
 
-module.exports = [root, list, listItem];
+module.exports = makeExecutableSchema({
+  typeDefs: [Root, List, ListItem],
+  resolvers: merge(listResolvers, listItemResolvers),
+});

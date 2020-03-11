@@ -1,6 +1,21 @@
-const { gql } = require('apollo-server-express');
+const listItem = require('./list-item');
 
-const typeDefs = gql`
+const resolvers = {
+  Query: {
+    listItems: (_, { where }) => listItem.get(where),
+    listItem: (_, { where }) => listItem.getOne(where),
+  },
+  Mutation: {
+    addListItem: (_, item) => listItem.add(item),
+    updateListItem: (_, { listItem: item }) => listItem.update(item),
+  },
+  ListItem: {
+    id: (node) => node.$loki,
+    name: (node) => node.name,
+  },
+};
+
+const typeDefs = `
   type ListItem {
     name: String!
     id: Int
@@ -26,4 +41,7 @@ const typeDefs = gql`
   }
 `;
 
-module.exports = typeDefs;
+module.exports = {
+  resolvers,
+  typeDefs,
+};

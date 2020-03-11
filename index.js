@@ -1,17 +1,10 @@
-// index.js
-const sls = require('serverless-http');
-const binaryMimeTypes = require('./config/binaryMimeTypes');
+const { ApolloServer } = require('apollo-server-lambda');
+const schema = require('./server/schema');
 
-const server = require('./server/server');
-
-const dev = process.env.NODE_ENV !== 'production';
-
-if (dev === true) {
-    server.listen({ port: 4000 }, () =>
-    console.log('🚀 Server ready at http://localhost:4000'));
-    return;
-}
-
-module.exports.server = sls(server, {
-    binary: binaryMimeTypes,
+const server = new ApolloServer({
+  schema,
+  introspection: true,
+  playground: true,
 });
+
+module.exports.graphqlHandler = server.createHandler();

@@ -3,31 +3,40 @@ service: listory
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: ${self:custom.secrets.NODE_ENV}
-  region: us-east-1
-  environment: 
-    NODE_ENV: ${self:custom.secrets.NODE_ENV}
+  # stage: ${self:custom.secrets.NODE_ENV}
+  # region: us-east-1
+  # environment: 
+    # NODE_ENV: ${self:custom.secrets.NODE_ENV}
+  exclude:
+    - client/**
+    - .vscode/**
 
 functions:
-  server:
-    handler: index.server
+  graphql:
+    handler: index.graphqlHandler
     events:
-      - http: ANY /
-      - http: ANY /{proxy+}
+    - http:
+        path: graphql
+        method: post
+        cors: true
+    - http:
+        path: graphql
+        method: get
+        cors: true
+    - http:
+        path: playground
+        method: any
+        cors: true
 
-plugins:
-  - serverless-apigw-binary
-  - serverless-domain-manager
+# plugins:
+#   - serverless-domain-manager
 
-custom:
-  secrets: ${file(secrets.json)}
-  apigwBinary:
-    types:
-      - '*/*'
-  customDomain:
-    domainName: ${self:custom.secrets.DOMAIN}
-    basePath: ''
-    stage: ${self:custom.secrets.NODE_ENV}
-    createRoute53Record: true
-    # endpointType: 'regional'
-    # if the ACM certificate is created in a region except for `'us-east-1'` you need `endpointType: 'regional'`
+# custom:
+#   secrets: ${file(secrets.json)}
+#   customDomain:
+#     domainName: ${self:custom.secrets.DOMAIN}
+#     basePath: ''
+#     stage: ${self:custom.secrets.NODE_ENV}
+#     createRoute53Record: true
+#     # endpointType: 'regional'
+#     # if the ACM certificate is created in a region except for `'us-east-1'` you need `endpointType: 'regional'`
