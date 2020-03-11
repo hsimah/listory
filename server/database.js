@@ -12,8 +12,6 @@ function DatabaseFactory({ collections }) {
   const adapter = new AWSS3SyncAdapter(options);
   const db = new Loki('db/listory.json', {
     adapter,
-    // autosave: true,
-    // autosaveInterval: 5000,
     autoload: true,
     autoloadCallback: () => {
       collections.forEach((c) => {
