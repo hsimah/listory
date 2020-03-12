@@ -5,11 +5,10 @@ jspm_packages
 # Serverless directories
 .serverless
 
-# Next directories
-.next
+# Build directories
+/build
 
-# secrets
+# Development dependencies
 secrets.json
-
-# production data
+.env
 listory-db.json

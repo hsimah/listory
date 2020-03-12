@@ -7,14 +7,26 @@ provider:
   region: us-east-1
   environment: 
     NODE_ENV: ${self:custom.secrets.NODE_ENV}
-  exclude:
-    - client/**
-    - .vscode/**
   deploymentBucket:
     name: habl-listory-01
     serverSideEncryption: AES256
 
+package:
+  exclude:
+    - client/**
+    - app/**
+    - .vscode/**
+    
 functions:
+  html:
+    handler: index.html
+    events:
+      - http:
+          path: /
+          method: get
+      - http:
+          path: /{proxy+}
+          method: get
   graphql:
     handler: index.graphqlHandler
     events:
@@ -26,10 +38,6 @@ functions:
         path: graphql
         method: get
         cors: true
-    - http:
-        path: playground
-        method: any
-        cors: true
 
 plugins:
   - serverless-domain-manager
@@ -37,6 +45,8 @@ plugins:
   - serverless-offline
 
 custom:
+  serverless-offline:
+    httpPort: 4000
   secrets: ${file(secrets.json)}
   customDomain:
     domainName: ${self:custom.secrets.DOMAIN}
