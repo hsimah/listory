@@ -5,7 +5,7 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import gql from 'graphql-tag';
 import React from 'react';
-import ListLink from '../../components/ListLink/ListLink';
+import ListLink from '../../components/Links/ListLink';
 import { useMutation } from 'react-apollo';
 
 const GET_LISTS = gql`

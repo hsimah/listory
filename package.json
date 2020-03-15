@@ -32,9 +32,14 @@
     "to-slug-case": "^1.0.0"
   },
   "devDependencies": {
+    "babel-eslint": "10.0.3",
     "eslint": "6.6.0",
     "eslint-config-dev": "2.0.0",
+    "eslint-plugin-flowtype": "^4.6.0",
+    "eslint-plugin-import": "2.20.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "7.18.3",
+    "eslint-plugin-react-hooks": "^2.5.0",
     "serverless-deployment-bucket": "^1.1.1",
     "serverless-domain-manager": "^3.3.1",
     "serverless-offline": "^6.0.0-alpha.67"

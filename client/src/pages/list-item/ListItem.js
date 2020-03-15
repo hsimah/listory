@@ -9,37 +9,26 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { useMutation, useQuery } from 'react-apollo';
 import { useParams } from 'react-router-dom';
-import ListItem from './ListItem';
-import ListItemInput from '../../components/ListItemInput/ListItemInput';
+import TextField from '@material-ui/core/TextField';
 
 const UPDATE_LIST = gql`
-mutation UpdateList($list: ListInput!) {
-  updateList(list: $list) {
+mutation UpdateList($listItem: ListItemInput!) {
+  updateListItem(listItem: $listItem) {
     id
     name
-    type
     slug
-    listItems {
-      id
-      name
-    }
   }
 }
 `;
 
-const GET_LIST = gql`
-query List($slug: String!) {
-  list(where: {
+const GET_LIST_ITEM = gql`
+query ListItem($slug: String!) {
+  listItem(where: {
     slug: $slug
   }) {
     id
     name
     slug
-    type
-    listItems {
-      id
-      name
-    }
   }
 }
 `;
@@ -51,37 +40,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function List() {
+function ListItem() {
   let { slug } = useParams();
   const classes = useStyles();
   const { data, error, loading } = useQuery(
-    GET_LIST,
+    GET_LIST_ITEM,
     {
       variables: {
         slug,
       },
     });
 
-  const [updateList] = useMutation(
+  const [updateListItem] = useMutation(
     UPDATE_LIST,
     {
-      update(cache, { data: { updateList } }) {
-        const { list } = cache.readQuery({ query: GET_LIST, variables: { slug } });
+      update(cache, { data: { updateListItem } }) {
+        const { list: listItem } = cache.readQuery({ query: GET_LIST_ITEM, variables: { slug } });
         cache.writeQuery({
-          query: GET_LIST,
-          data: { list: Object.assign({}, list, updateList) },
+          query: GET_LIST_ITEM,
+          data: { listItem: Object.assign({}, listItem, updateListItem) },
         });
       },
     });
 
   const handleChange = ({ target: { name, value } }) => {
-    const list = {
+    const listItem = {
       slug,
       [name]: value,
     };
-    updateList({
+    updateListItem({
       variables: {
-        list,
+        listItem,
       },
     });
   };
@@ -92,31 +81,18 @@ function List() {
   return <Grid container justify='center'>
     <Grid item xs={8}>
       <Typography variant='h3'>
-        {data.list.name}
+        {data.listItem.name}
       </Typography>
     </Grid>
     <Grid item xs={8}>
       <FormControl component='fieldset' className={classes.formControl}>
-        <InputLabel>{'Type'}</InputLabel>
-        <Select
-          id='type'
-          name='type'
-          value={data.list.type}
-          onChange={handleChange}
-        >
-          <MenuItem value={'MASTER'} name='type'>Master</MenuItem>
-          <MenuItem value={'SUB'} name='type'>Sub</MenuItem>
-          <MenuItem value={'TRANSIENT'} name='type'>Transient</MenuItem>
-        </Select>
+        <TextField disabled required onChange={handleChange} name='name' label='Name' value={data.listItem.name} />
       </FormControl>
       <FormControl component='fieldset' className={classes.formControl}>
-        <ListItemInput onChange={updateList} />
+        <TextField disabled required onChange={handleChange} name='slug' label='Slug' value={data.listItem.slug} />
       </FormControl>
-    </Grid>
-    <Grid item xs={8}>
-      <ListItem items={data.list.listItems} onChange={updateList} />
     </Grid>
   </Grid>;
 }
 
-export default List;
+export default ListItem;

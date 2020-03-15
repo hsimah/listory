@@ -5,10 +5,12 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import React from 'react';
-import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Link, NavLink, Route, Switch } from 'react-router-dom';
 import AddListButton from '../components/AddList/AddListButton';
 import List from './list/List';
 import Lists from './lists/Lists';
+import ListItems from './list-items/ListItems';
+import ListItem from './list-item/ListItem';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
   },
+  active: {
+    backgroundColor: theme.palette.primary.light,
+  },
 }));
 
 export default function Page() {
@@ -54,6 +59,12 @@ export default function Page() {
             </Button>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
+              <Button component={NavLink} to='/' exact activeClassName={classes.active} color='inherit'>
+                {'Lists'}
+              </Button>
+              <Button component={NavLink} to='/list-items' activeClassName={classes.active} color='inherit'>
+                {'Items'}
+              </Button>
               <AddListButton />
             </div>
           </Toolbar>
@@ -64,6 +75,12 @@ export default function Page() {
             <Switch>
               <Route path='/list/:slug'>
                 <List />
+              </Route>
+              <Route path='/list-items'>
+                <ListItems />
+              </Route>
+              <Route path='/list-item/:slug'>
+                <ListItem />
               </Route>
               <Route path='/'>
                 <Lists />
