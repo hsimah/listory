@@ -4,9 +4,10 @@
     "react": {
       "createClass": "createReactClass",
       "pragma": "React",
-      "version": "detect"
+      "version": "16.13.0"
     }
   },
+  "root": true,
   "parser": "babel-eslint",
   "plugins": [
     "react"
