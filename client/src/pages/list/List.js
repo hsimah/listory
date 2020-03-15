@@ -10,7 +10,7 @@ import React from 'react';
 import { useMutation, useQuery } from 'react-apollo';
 import { useParams } from 'react-router-dom';
 import ListItem from './ListItem';
-import ListItemInput from './ListItemInput';
+import ListItemInput from '../../components/ListItemInput/ListItemInput';
 
 const UPDATE_LIST = gql`
 mutation UpdateList($list: ListInput!) {
@@ -118,7 +118,5 @@ function List() {
     </Grid>
   </Grid>;
 }
-
-
 
 export default List;
