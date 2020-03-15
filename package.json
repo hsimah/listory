@@ -28,8 +28,8 @@
     "graphql-tools": "^4.0.7",
     "lodash.merge": "^4.6.2",
     "lokijs": "^1.5.8",
-    "to-slug-case": "^1.0.0",
-    "serverless-aws-static-file-handler": "^2.0.5"
+    "serverless-aws-static-file-handler": "^2.0.5",
+    "to-slug-case": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "6.6.0",
