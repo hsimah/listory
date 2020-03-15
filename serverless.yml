@@ -3,33 +3,40 @@ service: listory
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: ${self:custom.secrets.NODE_ENV}
+  stage: ${opt:stage}
   region: us-east-1
   environment: 
-    NODE_ENV: ${self:custom.secrets.NODE_ENV}
-  exclude:
-    - client/**
-    - .vscode/**
+    NODE_ENV: ${opt:stage}
   deploymentBucket:
     name: habl-listory-01
     serverSideEncryption: AES256
 
+package:
+  exclude:
+    - client/**
+    - '!client/build/**'
+    - .vscode/**
+    - .env
+    - secrets.json
+    
 functions:
-  graphql:
-    handler: index.graphqlHandler
+  html:
+    handler: index.html
     events:
-    - http:
-        path: graphql
-        method: post
-        cors: true
-    - http:
-        path: graphql
-        method: get
-        cors: true
-    - http:
-        path: playground
-        method: any
-        cors: true
+      - http:
+          path: /
+          method: get
+      - http:
+          path: /{proxy+}
+          method: get
+      - http:
+          path: graphql
+          method: post
+          cors: true
+      - http:
+          path: graphql
+          method: get
+          cors: true
 
 plugins:
   - serverless-domain-manager
@@ -37,11 +44,11 @@ plugins:
   - serverless-offline
 
 custom:
+  serverless-offline:
+    httpPort: 4000
   secrets: ${file(secrets.json)}
   customDomain:
     domainName: ${self:custom.secrets.DOMAIN}
     basePath: ''
-    stage: ${self:custom.secrets.NODE_ENV}
+    stage: ${opt:stage}
     createRoute53Record: true
-    # endpointType: 'regional'
-    # if the ACM certificate is created in a region except for `'us-east-1'` you need `endpointType: 'regional'`
