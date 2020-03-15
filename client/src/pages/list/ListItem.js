@@ -5,18 +5,12 @@ import ListItemContainer from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListIcon from '@material-ui/icons/List';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-const styles = makeStyles((theme) => ({
-
-}));
-
 function ListItem({ items, onChange }) {
-  const classes = styles();
   let { slug } = useParams();
 
   return <List>

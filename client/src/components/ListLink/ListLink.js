@@ -14,7 +14,7 @@ function ListLink({ name, listItems = [], slug, onDelete }) {
     () =>
       // eslint-disable-next-line react/display-name, react/no-multi-comp
       React.forwardRef((linkProps, ref) =>
-        <Link ref={ref} to={slug} {...linkProps} />
+        <Link ref={ref} to={`list/${slug}`} {...linkProps} />
       ),
     [slug],
   );

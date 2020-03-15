@@ -1,4 +1,3 @@
-import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import gql from 'graphql-tag';
@@ -39,16 +38,11 @@ mutation AddListItem($name: String!) {
 }
 `;
 
-const styles = makeStyles((theme) => ({
-
-}));
-
 function ListItemInput({ onChange }) {
   let { slug } = useParams();
-  const classes = styles();
 
-  const { data: listData, error: listError, loading: listLoading } = useQuery(GET_LIST, { variables: { slug } });
-  const { data: listItemData, error, loading } = useQuery(GET_LIST_ITEMS);
+  const { data: listData, loading: listLoading } = useQuery(GET_LIST, { variables: { slug } });
+  const { data: listItemData } = useQuery(GET_LIST_ITEMS);
 
   const listItemIds = React.useMemo(() => {
     return (listData.list.listItems || []).map((l) => l.id);

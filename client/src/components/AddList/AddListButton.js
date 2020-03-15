@@ -5,7 +5,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import AddCircle from '@material-ui/icons/AddCircle';
 import gql from 'graphql-tag';
@@ -23,11 +22,7 @@ mutation AddList($name: String!) {
 }
 `;
 
-const useStyles = makeStyles((theme) => ({
-}));
-
 function AddListButton() {
-  const classes = useStyles();
   const history = useHistory();
   const [value, setValue] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -40,7 +35,7 @@ function AddListButton() {
       onCompleted(data) {
         handleClose();
         setValue('');
-        history.push(data.addList.slug);
+        history.push(`list/${data.addList.slug}`);
       },
     });
 

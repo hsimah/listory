@@ -62,7 +62,7 @@ export default function Page() {
           <div className={classes.appBarSpacer} />
           <Container maxWidth='lg' className={classes.container}>
             <Switch>
-              <Route path='/:slug'>
+              <Route path='/list/:slug'>
                 <List />
               </Route>
               <Route path='/'>
