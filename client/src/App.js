@@ -32,7 +32,7 @@ function App() {
   const client = new ApolloClient({
     uri: isDev ? 'http://localhost:4000/dev/graphql' : 'https://listory.hsimah.services/graphql',
     headers: {
-      authToken: loggedIn !== false ? loggedIn : '',
+      authtoken: loggedIn !== false ? loggedIn : '',
     },
   });
 
