@@ -1,4 +1,5 @@
 const Api = require('../../api');
+const { AuthenticationError } = require('apollo-server-lambda');
 
 function ListSchemaFactory(db) {
   const list = new Api({
@@ -13,12 +14,17 @@ function ListSchemaFactory(db) {
   return {
     resolvers: {
       Query: {
-        lists: (_, { where }) => list.get(where),
-        list: (_, { where }) => list.getOne(where),
+        lists: async (_, { where }, context) => {
+          if (!context.user.isValid) {
+            throw new AuthenticationError('Invalid access token');
+          }
+          return list.get(where);
+        },
+        list: (_, { where }, context) => list.getOne(where),
       },
       Mutation: {
-        addList: (_, item) => list.add(item),
-        updateList: (_, { list: item }) => list.update(item),
+        addList: (_, item, context) => list.add(item),
+        updateList: (_, { list: item }, context) => list.update(item),
       },
       List: {
         id: (node) => node.$loki,
