@@ -1,20 +1,40 @@
+const { AuthenticationError } = require('apollo-server-lambda');
 const Api = require('../../api');
 
-function ListItemSchemaFactory(db) {
+function ListItemSchemaFactory() {
   const listItem = new Api({
-    db,
     name: 'list-item',
   });
 
   return {
     resolvers: {
       Query: {
-        listItems: (_, { where }) => listItem.get(where),
-        listItem: (_, { where }) => listItem.getOne(where),
+        listItems: (_, { where }, { database, user }) => {
+          if (user.isValid !== true) {
+            throw new AuthenticationError('Invalid access token');
+          }
+          return listItem.get(database, where);
+        },
+        listItem: (_, { where }, { database, user }) => {
+          if (user.isValid !== true) {
+            throw new AuthenticationError('Invalid access token');
+          }
+          return listItem.getOne(database, where);
+        },
       },
       Mutation: {
-        addListItem: (_, item) => listItem.add(item),
-        updateListItem: (_, { listItem: item }) => listItem.update(item),
+        addListItem: (_, item, { database, user }) => {
+          if (user.isValid !== true) {
+            throw new AuthenticationError('Invalid access token');
+          }
+          return listItem.add(database, item);
+        },
+        updateListItem: (_, { listItem: item }, { database, user }) => {
+          if (user.isValid !== true) {
+            throw new AuthenticationError('Invalid access token');
+          }
+          return listItem.update(database, item);
+        },
       },
       ListItem: {
         id: (node) => node.$loki,

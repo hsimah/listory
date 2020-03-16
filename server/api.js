@@ -2,25 +2,23 @@ const toSlugCase = require('to-slug-case');
 
 class Api {
   constructor({
-    db,
     name,
   }) {
-    this.db = db;
     this.name = name;
   }
 
-  get collection() {
-    return this.db.getCollection(this.name) || this.db.addCollection(this.name);
+  _collection(db) {
+    return db.getCollection(this.name) || db.addCollection(this.name);
   }
 
-  add({ name, ...rest }) {
-    const existing = this.collection.findOne({ name });
+  add(database, { name, ...rest }) {
+    const existing = this._collection(database).findOne({ name });
     if (existing != null) {
       // throw error
       return;
     }
     const slug = toSlugCase(name);
-    const item = this.collection.insert({
+    const item = this._collection(database).insert({
       slug,
       name,
       ...rest,
@@ -29,8 +27,8 @@ class Api {
     return item;
   }
 
-  update({ name: _, slug, ...rest }) {
-    const existing = this.collection.findOne({ slug });
+  update(database, { name: _, slug, ...rest }) {
+    const existing = this._collection(database).findOne({ slug });
     if (existing == null) {
       // throw error
       return;
@@ -41,7 +39,7 @@ class Api {
     return existing;
   }
 
-  getOne(params) {
+  getOne(database, params) {
     if (params == null) {
       return null;
     }
@@ -49,29 +47,29 @@ class Api {
     const { id, slug } = params;
     const query = id != null ? { $loki: id } : { slug };
 
-    return this.collection.findOne(query);
+    return this._collection(database).findOne(query);
   }
 
-  get(params) {
+  get(database, params) {
     if (params == null || Object.keys(params).length === 0) {
-      return this.collection.find({ archived: { $ne: true } });
+      return this._collection(database).find({ archived: { $ne: true } });
     }
 
     const { id, name, slug } = params;
 
     if (id != null) {
       const query = Array.isArray(id) ? { '$loki': { '$in': id } } : { '$loki': id };
-      return this.collection.find({ $and: [{ archived: { $ne: true } }, query] });
+      return this._collection(database).find({ $and: [{ archived: { $ne: true } }, query] });
     }
 
     if (slug != null) {
-      return this.collection.chain()
+      return this._collection(database).chain()
         .find({ archived: { $ne: true } })
         .where((i) => i.slug.contains(params.slug));
     }
 
     if (name != null) {
-      return this.collection.chain()
+      return this._collection(database).chain()
         .find({ archived: { $ne: true } })
         .where((i) => i.name.contains(params.name));
     }
