@@ -1,39 +1,55 @@
-const Api = require('../../api');
 const { AuthenticationError } = require('apollo-server-lambda');
+const Api = require('../../api');
 
-function ListSchemaFactory(db) {
+function ListSchemaFactory() {
   const list = new Api({
-    db,
     name: 'list',
   });
   const listItems = new Api({
-    db,
     name: 'list-item',
   });
 
   return {
     resolvers: {
       Query: {
-        lists: async (_, { where }, context) => {
-          if (!context.user.isValid) {
+        lists: (_, { where }, { database, user }) => {
+          if (user.isValid !== true) {
             throw new AuthenticationError('Invalid access token');
           }
-          return list.get(where);
+          return list.get(database, where);
         },
-        list: (_, { where }, context) => list.getOne(where),
+        list: (_, { where }, { database, user }) => {
+          if (user.isValid !== true) {
+            throw new AuthenticationError('Invalid access token');
+          }
+          return list.getOne(database, where);
+        },
       },
       Mutation: {
-        addList: (_, item, context) => list.add(item),
-        updateList: (_, { list: item }, context) => list.update(item),
+        addList: (_, item, { database, user }) => {
+          if (user.isValid !== true) {
+            throw new AuthenticationError('Invalid access token');
+          }
+          return list.add(database, item);
+        },
+        updateList: (_, { list: item }, { database, user }) => {
+          if (user.isValid !== true) {
+            throw new AuthenticationError('Invalid access token');
+          }
+          return list.update(database, item);
+        },
       },
       List: {
         id: (node) => node.$loki,
         type: (node) => node.type,
         name: (node) => node.name,
         archived: (node) => node.archived,
-        listItems: (node) => {
+        listItems: (node, _, {database, user}) => {
+          if (user.isValid !== true) {
+            throw new AuthenticationError('Invalid access token');
+          }
           if (node.listItems != null) {
-            return listItems.get({ id: node.listItems });
+            return listItems.get(database, { id: node.listItems });
           }
           return [];
         },

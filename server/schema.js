@@ -2,11 +2,9 @@ const ListSchemaFactory = require('./modules/list/schema');
 const ListItemSchemaFactory = require('./modules/list-item/schema');
 const { makeExecutableSchema } = require('graphql-tools');
 const merge = require('lodash.merge');
-const DatabaseFactory = require('./database');
 
-const database = DatabaseFactory({ collections: ['list', 'list-item'] });
-const { typeDefs: List, resolvers: listResolvers } = ListSchemaFactory(database);
-const { typeDefs: ListItem, resolvers: listItemResolvers } = ListItemSchemaFactory(database);
+const { typeDefs: List, resolvers: listResolvers } = ListSchemaFactory();
+const { typeDefs: ListItem, resolvers: listItemResolvers } = ListItemSchemaFactory();
 
 const Root = `
   type Query {
