@@ -5,44 +5,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import gql from 'graphql-tag';
 import React from 'react';
 import { useMutation, useQuery } from 'react-apollo';
 import { useParams } from 'react-router-dom';
-import ListItem from './ListItem';
 import ListItemInput from '../../components/ListItemInput/ListItemInput';
-
-const UPDATE_LIST = gql`
-mutation UpdateList($list: ListInput!) {
-  updateList(list: $list) {
-    id
-    name
-    type
-    slug
-    listItems {
-      id
-      name
-    }
-  }
-}
-`;
-
-const GET_LIST = gql`
-query List($slug: String!) {
-  list(where: {
-    slug: $slug
-  }) {
-    id
-    name
-    slug
-    type
-    listItems {
-      id
-      name
-    }
-  }
-}
-`;
+import queries from '../../data/queries';
+import mutations from '../../data/mutations';
+import ListItem from './ListItem';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -55,7 +24,7 @@ function List() {
   let { slug } = useParams();
   const classes = useStyles();
   const { data, error, loading } = useQuery(
-    GET_LIST,
+    queries.GET_LIST,
     {
       variables: {
         slug,
@@ -63,12 +32,12 @@ function List() {
     });
 
   const [updateList] = useMutation(
-    UPDATE_LIST,
+    mutations.UPDATE_LIST,
     {
       update(cache, { data: { updateList } }) {
-        const { list } = cache.readQuery({ query: GET_LIST, variables: { slug } });
+        const { list } = cache.readQuery({ query: queries.GET_LIST, variables: { slug } });
         cache.writeQuery({
-          query: GET_LIST,
+          query: queries.GET_LIST,
           data: { list: Object.assign({}, list, updateList) },
         });
       },

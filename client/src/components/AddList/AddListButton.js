@@ -7,20 +7,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import AddCircle from '@material-ui/icons/AddCircle';
-import gql from 'graphql-tag';
 import React from 'react';
 import { useMutation } from 'react-apollo';
 import { useHistory } from 'react-router-dom';
-
-const ADD_LIST_ITEM = gql`
-mutation AddList($name: String!) {
-  addList(name: $name) {
-    name
-    id
-    slug
-  }
-}
-`;
+import queries from '../../data/queries';
+import mutations from '../../data/mutations';
 
 function AddListButton() {
   const history = useHistory();
@@ -30,12 +21,21 @@ function AddListButton() {
   const handleClose = () => setOpen(false);
 
   const [addList] = useMutation(
-    ADD_LIST_ITEM,
+    mutations.ADD_LIST,
     {
+      update(
+        cache,
+        { data: { addList } }) {
+        const { lists } = cache.readQuery({ query: queries.GET_LISTS });
+        cache.writeQuery({
+          query: queries.GET_LISTS,
+          data: { list: lists.concat([addList]) },
+        });
+      },
       onCompleted(data) {
         handleClose();
         setValue('');
-        history.push(`list/${data.addList.slug}`);
+        history.push(`/list/${data.addList.slug}`);
       },
     });
 

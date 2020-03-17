@@ -1,34 +1,13 @@
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import gql from 'graphql-tag';
 import React from 'react';
 import { useMutation, useQuery } from 'react-apollo';
 import { useParams } from 'react-router-dom';
-import TextField from '@material-ui/core/TextField';
-
-const UPDATE_LIST = gql`
-mutation UpdateList($listItem: ListItemInput!) {
-  updateListItem(listItem: $listItem) {
-    id
-    name
-    slug
-  }
-}
-`;
-
-const GET_LIST_ITEM = gql`
-query ListItem($slug: String!) {
-  listItem(where: {
-    slug: $slug
-  }) {
-    id
-    name
-    slug
-  }
-}
-`;
+import queries from '../../data/queries';
+import mutations from '../../data/mutations';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -41,7 +20,7 @@ function ListItem() {
   let { slug } = useParams();
   const classes = useStyles();
   const { data, error, loading } = useQuery(
-    GET_LIST_ITEM,
+    queries.GET_LIST_ITEM,
     {
       variables: {
         slug,
@@ -49,12 +28,12 @@ function ListItem() {
     });
 
   const [updateListItem] = useMutation(
-    UPDATE_LIST,
+    mutations.UPDATE_LIST,
     {
       update(cache, { data: { updateListItem } }) {
-        const { list: listItem } = cache.readQuery({ query: GET_LIST_ITEM, variables: { slug } });
+        const { list: listItem } = cache.readQuery({ query: queries.GET_LIST_ITEM, variables: { slug } });
         cache.writeQuery({
-          query: GET_LIST_ITEM,
+          query: queries.GET_LIST_ITEM,
           data: { listItem: Object.assign({}, listItem, updateListItem) },
         });
       },
