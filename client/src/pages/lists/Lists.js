@@ -3,49 +3,22 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import gql from 'graphql-tag';
 import React from 'react';
-import ListLink from '../../components/Links/ListLink';
 import { useMutation } from 'react-apollo';
-
-const GET_LISTS = gql`
-query Lists {
-  lists {
-    name
-    type
-    id
-    slug
-    archived
-  }
-}
-`;
-
-const UPDATE_LIST = gql`
-mutation UpdateList($list: ListInput!) {
-  updateList(list: $list) {
-    id
-    name
-    type
-    slug
-    archived
-    listItems {
-      id
-      name
-    }
-  }
-}
-`;
+import ListLink from '../../components/Links/ListLink';
+import queries from '../../data/queries';
+import mutations from '../../data/mutations';
 
 function Lists() {
-  const { data = { lists: [] }, loading } = useQuery(GET_LISTS);
+  const { data = { lists: [] }, loading } = useQuery(queries.GET_LISTS);
 
   const [updateList] = useMutation(
-    UPDATE_LIST,
+    mutations.UPDATE_LIST,
     {
       update(cache, { data: { updateList } }) {
-        const { lists } = cache.readQuery({ query: GET_LISTS });
+        const { lists } = cache.readQuery({ query: queries.GET_LISTS });
         cache.writeQuery({
-          query: GET_LISTS,
+          query: queries.GET_LISTS,
           data: { lists: lists.filter((l) => !l.archived) },
         });
       },

@@ -2,23 +2,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import gql from 'graphql-tag';
 import React from 'react';
-import { ListItemLink } from '../../components/Links';
 import { useQuery } from 'react-apollo';
-
-const GET_LIST_ITEMS = gql`
-query ListItems {
-  listItems {
-    name
-    id
-    slug
-  }
-}
-`;
+import { ListItemLink } from '../../components/Links';
+import queries from '../../data/queries';
 
 function ListItems() {
-  const { data = { listItems: [] }, loading } = useQuery(GET_LIST_ITEMS);
+  const { data = { listItems: [] }, loading } = useQuery(queries.GET_LIST_ITEMS);
 
   if (loading) return <CircularProgress />;
 

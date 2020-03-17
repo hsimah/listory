@@ -23,7 +23,7 @@ class Api {
       name,
       ...rest,
     });
-    this.db.saveDatabase();
+    database.saveDatabase();
     return item;
   }
 
@@ -35,8 +35,23 @@ class Api {
     }
 
     Object.assign(existing, rest);
-    this.db.saveDatabase();
+    database.saveDatabase();
     return existing;
+  }
+
+  delete(database, { slug }) {
+    const existing = this._collection(database).findOne({ slug });
+    if (existing == null) {
+      // throw error
+      return;
+    }
+
+    Object.assign(existing, { archived: true });
+    database.saveDatabase();
+    return {
+      $loki: existing.$loki,
+      archived: true,
+    };
   }
 
   getOne(database, params) {

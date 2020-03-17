@@ -38,6 +38,12 @@ function ListSchemaFactory() {
           }
           return list.update(database, item);
         },
+        deleteList: (_, { list: item }, { database, user }) => {
+          if (user.isValid !== true) {
+            throw new AuthenticationError('Invalid access token');
+          }
+          return list.delete(database, item);
+        },
       },
       List: {
         id: (node) => node.$loki,
@@ -89,6 +95,7 @@ function ListSchemaFactory() {
     extend type Mutation {
       addList(name: String!): List!
       updateList(list: ListInput!): List!
+      deleteList(list: ListInput!): List!
     }
   `,
   };
