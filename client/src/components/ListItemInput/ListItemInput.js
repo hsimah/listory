@@ -1,7 +1,7 @@
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import React from 'react';
-import { useMutation, useQuery } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import queries from '../../data/queries';
 import mutations from '../../data/mutations';
@@ -9,7 +9,7 @@ import mutations from '../../data/mutations';
 const filter = createFilterOptions();
 
 function ListItemInput({ onChange }) {
-  let { slug } = useParams();
+  const { slug } = useParams();
 
   const { data: listData, loading: listLoading } = useQuery(queries.GET_LIST, { variables: { slug } });
   const { data: listItemData } = useQuery(queries.GET_LIST_ITEMS);

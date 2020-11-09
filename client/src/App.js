@@ -1,6 +1,6 @@
 import ApolloClient from 'apollo-boost';
 import React from 'react';
-import { ApolloProvider } from 'react-apollo';
+import { ApolloProvider } from '@apollo/client';
 import Page from './pages/Page';
 
 function App() {

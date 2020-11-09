@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { useQuery } from 'react-apollo';
+import { useQuery } from '@apollo/client';
 import { ListItemLink } from '../../components/Links';
 import queries from '../../data/queries';
 

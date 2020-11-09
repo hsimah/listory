@@ -7,7 +7,7 @@ mutation AddList($name: String!) {
     ...ListDetails
   }
 }
-${fragments.LIST_ITEM}
+${fragments.LIST}
 `;
 
 const UPDATE_LIST = gql`
@@ -45,6 +45,7 @@ mutation DeleteList($list: ListInput!) {
     ...ListDetails
   }
 }
+${fragments.LIST}
 `;
 
 export default {

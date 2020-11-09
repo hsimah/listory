@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import AddCircle from '@material-ui/icons/AddCircle';
 import React from 'react';
-import { useMutation } from 'react-apollo';
+import { useMutation } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
 import queries from '../../data/queries';
 import mutations from '../../data/mutations';
