@@ -12,6 +12,7 @@ import ListItemInput from '../../components/ListItemInput/ListItemInput';
 import queries from '../../data/queries';
 import mutations from '../../data/mutations';
 import ListItem from './ListItem';
+import QRCode from 'qrcode.react';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -63,6 +64,7 @@ function List() {
       <Typography variant='h3'>
         {data.list.name}
       </Typography>
+      <QRCode value={window.location} />
     </Grid>
     <Grid item xs={8}>
       <FormControl component='fieldset' className={classes.formControl}>

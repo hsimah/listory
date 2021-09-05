@@ -16,8 +16,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
   },
-  appBar: {
-  },
   title: {
     flexGrow: 1,
   },
@@ -32,10 +30,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(4),
   },
   sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'flex',
-    },
+    display: 'flex',
   },
   grow: {
     flexGrow: 1,
@@ -49,46 +44,44 @@ export default function Page() {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
-      <Router>
-        <CssBaseline />
-        <AppBar position='absolute' className={classes.appBar}>
-          <Toolbar>
-            <Button component={Link} to='/' color='inherit'>
-              {'Listory'}
+    <Router>
+      <CssBaseline />
+      <AppBar position='absolute'>
+        <Toolbar>
+          <Button component={Link} to='/' color='inherit'>
+            {'Listory'}
+          </Button>
+          <div className={classes.grow} />
+          <div className={classes.sectionDesktop}>
+            <Button component={NavLink} to='/' exact activeClassName={classes.active} color='inherit'>
+              {'Lists'}
             </Button>
-            <div className={classes.grow} />
-            <div className={classes.sectionDesktop}>
-              <Button component={NavLink} to='/' exact activeClassName={classes.active} color='inherit'>
-                {'Lists'}
-              </Button>
-              <Button component={NavLink} to='/list-items' activeClassName={classes.active} color='inherit'>
-                {'Items'}
-              </Button>
-              <AddListButton />
-            </div>
-          </Toolbar>
-        </AppBar>
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth='lg' className={classes.container}>
-            <Switch>
-              <Route path='/list/:slug'>
-                <List />
-              </Route>
-              <Route path='/list-items'>
-                <ListItems />
-              </Route>
-              <Route path='/list-item/:slug'>
-                <ListItem />
-              </Route>
-              <Route path='/'>
-                <Lists />
-              </Route>
-            </Switch>
-          </Container>
-        </main>
-      </Router>
-    </div>
+            <Button component={NavLink} to='/list-items' activeClassName={classes.active} color='inherit'>
+              {'Items'}
+            </Button>
+            <AddListButton />
+          </div>
+        </Toolbar>
+      </AppBar>
+      <main className={classes.content}>
+        <div className={classes.appBarSpacer} />
+        <Container maxWidth='lg' className={classes.container}>
+          <Switch>
+            <Route path='/list/:slug'>
+              <List />
+            </Route>
+            <Route path='/list-items'>
+              <ListItems />
+            </Route>
+            <Route path='/list-item/:slug'>
+              <ListItem />
+            </Route>
+            <Route path='/'>
+              <Lists />
+            </Route>
+          </Switch>
+        </Container>
+      </main>
+    </Router>
   );
 }

@@ -88,9 +88,9 @@ function ListItemInput({ onChange }) {
     }}
     renderOption={(option) => option.name}
     freeSolo
-    renderInput={(params) =>
-      <TextField {...params} label='Add list items' />
-    }
+    renderInput={(params) => {
+      return <TextField {...params} label='Add list items' />;
+    }}
   />;
 }
 
