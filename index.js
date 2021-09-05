@@ -3,17 +3,18 @@ const got = require('got');
 const StaticFileHandler = require('serverless-aws-static-file-handler');
 const path = require('path');
 const Database = require('./server/database');
+const schema = require('./server/schema');
 
 require('dotenv').config();
 
 const clientFilesPath = path.join(__dirname, './client/build/');
 const fileHandler = new StaticFileHandler(clientFilesPath);
-const schema = require('./server/schema');
 const server = new ApolloServer({
   schema,
   playground: process.env.NODE_ENV === 'dev',
   context: async ({ event }) => {
-    const response = await got(`https://graph.facebook.com/debug_token?input_token=${event.headers.authtoken}&access_token=${process.env.FB_APP_ID}|${process.env.FB_APP_SECRET}`, { responseType: 'json', resolveBodyOnly: true });
+    const authURI = getAuthURI(event);
+    const response = await got(authURI, { responseType: 'json', resolveBodyOnly: true });
     const database = new Database();
     await database.init();
 
@@ -46,3 +47,8 @@ module.exports.html = (event, context, callback) => {
 
   return fileHandler.get(event, context);
 };
+
+function getAuthURI({ headers }) {
+  const accessToken = `${process.env.FB_APP_ID}|${process.env.FB_APP_SECRET}`;
+  return `https://graph.facebook.com/debug_token?input_token=${headers.authtoken}&access_token=${accessToken}`;
+}

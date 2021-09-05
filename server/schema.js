@@ -1,6 +1,6 @@
 const ListSchemaFactory = require('./modules/list/schema');
 const ListItemSchemaFactory = require('./modules/list-item/schema');
-const { makeExecutableSchema } = require('graphql-tools');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
 const merge = require('lodash.merge');
 
 const { typeDefs: List, resolvers: listResolvers } = ListSchemaFactory();
