@@ -6,12 +6,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import React from 'react';
 import { BrowserRouter as Router, Link, NavLink, Route, Switch } from 'react-router-dom';
-import AddListButton from '../components/AddList/AddListButton';
-import List from './list/List';
-import Lists from './lists/Lists';
-import ListItems from './list-items/ListItems';
-import ListItem from './list-item/ListItem';
 import RepeatableLists from './repeatable-lists/RepeatableLists';
+import AddRepeatableListButton from '../components/AddList/AddRepeatableListButton';
+import RepeatableList from './repeatable-lists/RepeatableList';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,12 +58,9 @@ export default function Page() {
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
               {/* <Button component={NavLink} to='/' exact activeClassName={classes.active} color='inherit'>
-                {'Lists'}
-              </Button>
-              <Button component={NavLink} to='/list-items' activeClassName={classes.active} color='inherit'>
                 {'Items'}
               </Button> */}
-              <AddListButton />
+              <AddRepeatableListButton />
             </div>
           </Toolbar>
         </AppBar>
@@ -74,17 +68,10 @@ export default function Page() {
           <div className={classes.appBarSpacer} />
           <Container maxWidth='lg' className={classes.container}>
             <Switch>
-              {/* <Route path='/list/:slug'>
-                <List />
+              <Route path='/list/:slug'>
+                <RepeatableList />
               </Route>
-              <Route path='/list-items'>
-                <ListItems />
-              </Route>
-              <Route path='/list-item/:slug'>
-                <ListItem />
-              </Route> */}
               <Route path='/'>
-                {/* <Lists /> */}
                 <RepeatableLists />
               </Route>
             </Switch>

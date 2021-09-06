@@ -9,53 +9,32 @@
  *   Once all items are complete the list is completed
  */
 
-const { AuthenticationError } = require('apollo-server-lambda');
-const Api = require('../../api');
-
 function RepeatableListSchemaFactory() {
   return {
     resolvers: {
       Query: {
-        lists: (_, { where }, { lists, user }) => {
-          if (user.isValid !== true) {
-            throw new AuthenticationError('Invalid access token');
-          }
-          return lists.get(where);
+        repeatableLists: (_, { where }, { repeatableLists }) => {
+          return repeatableLists.get(where);
         },
-        list: (_, { where }, { lists, user }) => {
-          if (user.isValid !== true) {
-            throw new AuthenticationError('Invalid access token');
-          }
-          return lists.getOne(where);
+        repeatableList: (_, { where }, { repeatableLists }) => {
+          return repeatableLists.getOne(where);
         },
       },
       Mutation: {
-        addRepeatableList: (_, item, { lists, user }) => {
-          if (user.isValid !== true) {
-            throw new AuthenticationError('Invalid access token');
-          }
-          return lists.add(item);
+        addRepeatableList: (_, { list }, { repeatableLists }) => {
+          return repeatableLists.add(list);
         },
-        updateRepeatableList: (_, { item }, { lists, user }) => {
-          if (user.isValid !== true) {
-            throw new AuthenticationError('Invalid access token');
-          }
-          return lists.update(item);
+        updateRepeatableList: (_, { list }, { repeatableLists }) => {
+          return repeatableLists.update(list);
         },
-        deleteListItem: (_, { list: item }, { lists, user }) => {
-          if (user.isValid !== true) {
-            throw new AuthenticationError('Invalid access token');
-          }
-          return lists.delete(item);
+        deleteRepeatableList: (_, { id }, { repeatableLists }) => {
+          return repeatableLists.delete({ id });
         },
-        addRepetition: (_obj, {where}, { lists, repeatedLists, user }) => {
-          if (user.isValid !== true) {
-            throw new AuthenticationError('Invalid access token');
-          }
-          const list = lists.getOne(where);
+        addRepetition: (_, { where }, { repeatableLists, repeatedLists }) => {
+          const list = repeatableLists.getOne(where);
 
           // complete previous active list
-          const lastRepeatedList = repeatedLists.getOne({id: list.activeList});
+          const lastRepeatedList = repeatedLists.getOne({ id: list.activeList });
           lastRepeatedList.completedTime = Date.now();
           repeatedLists.update(lastRepeatedList);
 
@@ -66,38 +45,28 @@ function RepeatableListSchemaFactory() {
           });
           list.activeList = repeatedList.$loki;
           list.lists = [...list.lists, repeatedList.$loki];
-          return lists.update(list);
+          return repeatableLists.update(list);
         },
       },
       RepeatableList: {
         id: (node) => node.$loki,
-        type: (node) => node.type,
         name: (node) => node.name,
         archived: (node) => node.archived,
-        listItems: (node, _, { listItems, user }) => {
-          if (user.isValid !== true) {
-            throw new AuthenticationError('Invalid access token');
-          }
+        listItems: (node, _, { listItems }) => {
           if (node.listItems != null) {
             return listItems.get({ id: node.listItems });
           }
           return [];
         },
         slug: (node) => node.slug,
-        lists: (node, _, { repeatedLists, user }) => {
-          if (user.isValid !== true) {
-            throw new AuthenticationError('Invalid access token');
-          }
+        lists: (node, _, { repeatedLists }) => {
           if (node.lists != null) {
             return repeatedLists.get({ id: node.lists });
           }
           return [];
         },
-        activeList: (node, _, { repeatedListItems, user }) => {
-          if (user.isValid !== true) {
-            throw new AuthenticationError('Invalid access token');
-          }
-          return repeatedListItems.getOne({id: node.activeList});
+        activeList: (node, _, { repeatedListItems }) => {
+          return repeatedListItems.getOne({ id: node.activeList });
         },
       },
       RepeatableListItem: {
@@ -107,10 +76,7 @@ function RepeatableListSchemaFactory() {
       },
       RepeatedList: {
         id: (node) => node.$loki,
-        listItems: (node, _, { repeatedListItems, user }) => {
-          if (user.isValid !== true) {
-            throw new AuthenticationError('Invalid access token');
-          }
+        listItems: (node, _, { repeatedListItems }) => {
           if (node.listItems != null) {
             return repeatedListItems.get({ id: node.listItems });
           }
@@ -131,16 +97,15 @@ function RepeatableListSchemaFactory() {
     type RepeatableList {
       id: ID!
       name: String!
-      type: ListType
       archived: Boolean
-      listItems: [ListItem]
+      listItems: [RepeatableListItem]
       slug: String!
       activeList: RepeatedList
       lists: [RepeatedList!]
     }
     type RepeatableListItem {
+      id: ID!
       name: String!
-      id: Int
       slug: String
     }
     type RepeatedList {
@@ -151,19 +116,34 @@ function RepeatableListSchemaFactory() {
     }
     type RepeatedListItem {
       name: String!
-      id: Int
+      id: ID!
       slug: String
       completedTime: Int
       completed: Boolean!
+    }
+    input AddListInput {
+      name: String!,
+      listItems: [ID!]
+    }
+    input UpdateListInput {
+      id: ID
+      name: String,
+      listItems: [ID!]
+    }
+    input ListWhereArgs {
+      id: ID
+      name: String
+      slug: String
     }
     extend type Query {
       repeatableLists(where: ListWhereArgs): [RepeatableList!]
       repeatableList(where: ListWhereArgs): RepeatableList
     }
     extend type Mutation {
-      addList(name: String!): List!
-      updateList(list: ListUpdateInput!): List!
-      deleteList(list: ID!): List!
+      addRepeatableList(list: AddListInput!): RepeatableList!
+      updateRepeatableList(list: UpdateListInput!): RepeatableList!
+      deleteRepeatableList(id: ID!): ID!
+      addRepetition(where: ListWhereArgs!): RepeatableList!
     }
    `,
   };

@@ -3,30 +3,28 @@ import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete
 import React from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { useParams } from 'react-router-dom';
-import queries from '../../data/queries';
-import mutations from '../../data/mutations';
+import gql from 'graphql-tag';
 
 const filter = createFilterOptions();
 
-function ListItemInput({ onChange }) {
+export default function ListItemInput({ onChange }) {
   const { slug } = useParams();
 
-  const { data: listData, loading: listLoading } = useQuery(queries.GET_LIST, { variables: { slug } });
-  const { data: listItemData } = useQuery(queries.GET_LIST_ITEMS);
+  const { data, loading } = useQuery(ListItemInput.queries.GET_LIST, { variables: { slug } });
 
   const listItemIds = React.useMemo(() => {
-    return (listData.list.listItems || []).map((l) => l.id);
-  }, [listData.list.listItems]);
+    return (data.repeatableList.listItems || []).map((l) => l.id);
+  }, [data.repeatableList.listItems]);
 
   const [addListItem] = useMutation(
-    mutations.ADD_LIST_ITEM,
+    ListItemInput.mutations.ADD_LIST_ITEM,
     {
       update(
         cache,
         { data: { addListItem } }) {
-        const { listItems } = cache.readQuery({ query: queries.GET_LIST_ITEMS });
+        const { listItems } = cache.readQuery({ query: ListItemInput.queries.GET_LIST });
         cache.writeQuery({
-          query: queries.GET_LIST_ITEMS,
+          query: ListItemInput.queries.GET_LIST,
           data: { listItems: listItems.concat([addListItem]) },
         });
       },
@@ -42,7 +40,7 @@ function ListItemInput({ onChange }) {
       },
     });
 
-  if (listLoading) return null;
+  if (loading) return null;
 
   return <Autocomplete
     onChange={(_, newValue) => {
@@ -76,7 +74,7 @@ function ListItemInput({ onChange }) {
 
       return filtered;
     }}
-    options={listItemData?.listItems ?? []}
+    options={data.repeatableList?.listItems ?? []}
     getOptionLabel={(option) => {
       if (typeof option === 'string') {
         return option;
@@ -94,4 +92,36 @@ function ListItemInput({ onChange }) {
   />;
 }
 
-export default ListItemInput;
+ListItemInput.fragments = {
+  LIST_ITEM: gql`
+  fragment ListItemDetails on ListItem {
+    id
+    name
+    slug
+  }
+  `,
+};
+
+ListItemInput.mutations = {
+  ADD_LIST_ITEM: gql`
+  mutation AddListItem($name: String!) {
+    addListItem(name: $name) {
+      ...ListItemDetails
+    }
+  }
+  ${ListItemInput.fragments.LIST_ITEM}
+  `,
+};
+
+ListItemInput.queries = {
+  GET_LIST: gql`
+  query RepeatableListItems($slug: String!) {
+    repeatableList(list: {slug: $string}) {
+      listItems {
+        ...ListItemDetails
+      }
+    }
+  }
+  ${ListItemInput.fragments.LIST_ITEM}
+  `,
+};

@@ -1,6 +1,10 @@
 const toSlugCase = require('to-slug-case');
 
 class Api {
+  static init({ database, modules }) {
+    return modules.map((m) => new Api({ name: m, database }));
+  }
+
   constructor({
     name,
     database,

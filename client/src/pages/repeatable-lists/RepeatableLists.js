@@ -6,14 +6,13 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useMutation } from '@apollo/client';
 import ListLink from '../../components/Links/ListLink';
-import mutations from '../../data/mutations';
 import gql from 'graphql-tag';
 
 export default function RepeatableLists() {
   const { data = { repeatableLists: [] }, loading } = useQuery(RepeatableLists.queries.GET_REPEATABLE_LISTS);
 
   const [updateList] = useMutation(
-    mutations.UPDATE_LIST,
+    RepeatableLists.mutations.UPDATE_REPEATABLE_LIST,
     {
       update(cache, { data: { updateList } }) {
         const { lists } = cache.readQuery({ query: RepeatableLists.queries.GET_REPEATABLE_LISTS });
@@ -58,7 +57,6 @@ RepeatableLists.fragments = {
     id
     name
     slug
-    type
     archived
   }
   `,
@@ -69,6 +67,22 @@ RepeatableLists.queries = {
   query RepeatableLists {
     repeatableLists {
       ...RepeatableListDetails
+    }
+  }
+  ${RepeatableLists.fragments.REPEATABLE_LIST}
+  `,
+};
+
+RepeatableLists.mutations = {
+  UPDATE_REPEATABLE_LIST: gql`
+  mutation UpdateRepeatableList($list: UpdateListInput!) {
+    updateRepeatableList(list: $list) {
+      ...RepeatableListDetails
+      listItems {
+        id
+        name
+        slug
+      }
     }
   }
   ${RepeatableLists.fragments.REPEATABLE_LIST}

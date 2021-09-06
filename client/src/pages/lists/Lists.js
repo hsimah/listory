@@ -6,8 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useMutation } from '@apollo/client';
 import ListLink from '../../components/Links/ListLink';
-import queries from '../../data/queries';
-import mutations from '../../data/mutations';
 
 function Lists() {
   const { data = { lists: [] }, loading } = useQuery(queries.GET_LISTS);

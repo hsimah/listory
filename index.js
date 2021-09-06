@@ -1,4 +1,4 @@
-const { ApolloServer } = require('apollo-server-lambda');
+const { ApolloServer, AuthenticationError } = require('apollo-server-lambda');
 const got = require('got');
 const StaticFileHandler = require('serverless-aws-static-file-handler');
 const path = require('path');
@@ -16,29 +16,32 @@ const server = new ApolloServer({
   context: async ({ event }) => {
     const authURI = getAuthURI(event);
     const response = await got(authURI, { responseType: 'json', resolveBodyOnly: true });
+
+    if (response.data.is_valid !== true) {
+      throw new AuthenticationError('Invalid access token');
+    }
+
     const dbServer = new Database();
     await dbServer.init();
 
-    const lists = new Api({
-      name: 'repeatable-list',
-      database: dbServer.database,
-    });
-    const listItems = new Api({
-      name: 'repeatable-list-item',
-      database: dbServer.database,
-    });
-    const repeatedLists = new Api({
-      name: 'repeated-list',
-      database: dbServer.database,
-    });
-    const repeatedListItems = new Api({
-      name: 'repeated-list-item',
+    const [
+      repeatableLists,
+      repeatableListItems,
+      repeatedLists,
+      repeatedListItems,
+    ] = Api.init({
+      modules: [
+        'repeatable-list',
+        'repeatable-list-item',
+        'repeated-list',
+        'repeated-list-item',
+      ],
       database: dbServer.database,
     });
 
     return {
-      lists,
-      listItems,
+      repeatableLists,
+      repeatableListItems,
       repeatedLists,
       repeatedListItems,
       database: dbServer.database,
