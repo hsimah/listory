@@ -11,6 +11,7 @@ import List from './list/List';
 import Lists from './lists/Lists';
 import ListItems from './list-items/ListItems';
 import ListItem from './list-item/ListItem';
+import RepeatableLists from './repeatable-lists/RepeatableLists';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,12 +60,12 @@ export default function Page() {
             </Button>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-              <Button component={NavLink} to='/' exact activeClassName={classes.active} color='inherit'>
+              {/* <Button component={NavLink} to='/' exact activeClassName={classes.active} color='inherit'>
                 {'Lists'}
               </Button>
               <Button component={NavLink} to='/list-items' activeClassName={classes.active} color='inherit'>
                 {'Items'}
-              </Button>
+              </Button> */}
               <AddListButton />
             </div>
           </Toolbar>
@@ -73,7 +74,7 @@ export default function Page() {
           <div className={classes.appBarSpacer} />
           <Container maxWidth='lg' className={classes.container}>
             <Switch>
-              <Route path='/list/:slug'>
+              {/* <Route path='/list/:slug'>
                 <List />
               </Route>
               <Route path='/list-items'>
@@ -81,9 +82,10 @@ export default function Page() {
               </Route>
               <Route path='/list-item/:slug'>
                 <ListItem />
-              </Route>
+              </Route> */}
               <Route path='/'>
-                <Lists />
+                {/* <Lists /> */}
+                <RepeatableLists />
               </Route>
             </Switch>
           </Container>
