@@ -29,6 +29,9 @@ class Database {
   init() {
     return new Promise((resolve, reject) => {
       try {
+        if (this._database != null) {
+          resolve(this._database);
+        }
         const db = new Loki('db/listory.json', {
           adapter: this.adapter,
           autoload: true,

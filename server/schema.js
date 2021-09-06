@@ -1,10 +1,10 @@
-const ListSchemaFactory = require('./modules/list/schema');
-const ListItemSchemaFactory = require('./modules/list-item/schema');
+const RepeatableListSchemaFactory = require('./modules/repeatable-list/repeatable-list-schema');
+const RepeatableListItemSchemaFactory = require('./modules/repeatable-list/repeatable-list-item-schema');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const merge = require('lodash.merge');
 
-const { typeDefs: List, resolvers: listResolvers } = ListSchemaFactory();
-const { typeDefs: ListItem, resolvers: listItemResolvers } = ListItemSchemaFactory();
+const { typeDefs: RepeatableList, resolvers: repeatableListItemResolvers } = RepeatableListSchemaFactory();
+const { typeDefs: RepeatableListItem, resolvers: repeatableListItemItemResolvers } = RepeatableListItemSchemaFactory();
 
 const Root = `
   type Query {
@@ -16,6 +16,6 @@ const Root = `
 `;
 
 module.exports = makeExecutableSchema({
-  typeDefs: [Root, List, ListItem],
-  resolvers: merge(listResolvers, listItemResolvers),
+  typeDefs: [Root, RepeatableListItem, RepeatableList],
+  resolvers: merge(repeatableListItemItemResolvers, repeatableListItemResolvers),
 });

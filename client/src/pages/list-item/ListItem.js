@@ -6,8 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { useParams } from 'react-router-dom';
-import queries from '../../data/queries';
-import mutations from '../../data/mutations';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

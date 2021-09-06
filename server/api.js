@@ -1,60 +1,66 @@
 const toSlugCase = require('to-slug-case');
 
 class Api {
+  static init({ database, modules }) {
+    return modules.map((m) => new Api({ name: m, database }));
+  }
+
   constructor({
     name,
+    database,
   }) {
     this.name = name;
+    this.database = database;
   }
 
-  _collection(db) {
-    return db.getCollection(this.name) || db.addCollection(this.name);
+  _collection() {
+    return this.database.getCollection(this.name) || this.database.addCollection(this.name);
   }
 
-  add(database, { name, ...rest }) {
-    const existing = this._collection(database).findOne({ name });
+  add({ name, ...rest }) {
+    const existing = this._collection().findOne({ name });
     if (existing != null) {
-      // throw error
-      return;
+      return existing;
     }
     const slug = toSlugCase(name);
-    const item = this._collection(database).insert({
+    const item = this._collection().insert({
       slug,
       name,
       ...rest,
     });
-    database.saveDatabase();
+    this.database.saveDatabase();
+    console.log('[api:add]', item);
     return item;
   }
 
-  update(database, { name: _, slug, ...rest }) {
-    const existing = this._collection(database).findOne({ slug });
+  update({ name: _, slug, ...rest }) {
+    const existing = this._collection().findOne({ slug });
     if (existing == null) {
       // throw error
       return;
     }
 
     Object.assign(existing, rest);
-    database.saveDatabase();
+    this.database.saveDatabase();
     return existing;
   }
 
-  delete(database, { slug }) {
-    const existing = this._collection(database).findOne({ slug });
+  delete({ slug }) {
+    const existing = this._collection().findOne({ slug });
     if (existing == null) {
       // throw error
       return;
     }
 
     Object.assign(existing, { archived: true });
-    database.saveDatabase();
+    this.database.saveDatabase();
     return {
       $loki: existing.$loki,
       archived: true,
     };
   }
 
-  getOne(database, params) {
+  getOne(params) {
     if (params == null) {
       return null;
     }
@@ -62,29 +68,29 @@ class Api {
     const { id, slug } = params;
     const query = id != null ? { $loki: id } : { slug };
 
-    return this._collection(database).findOne(query);
+    return this._collection().findOne(query);
   }
 
-  get(database, params) {
+  get(params) {
     if (params == null || Object.keys(params).length === 0) {
-      return this._collection(database).find({ archived: { $ne: true } });
+      return this._collection().find({ archived: { $ne: true } });
     }
 
     const { id, name, slug } = params;
 
     if (id != null) {
       const query = Array.isArray(id) ? { '$loki': { '$in': id } } : { '$loki': id };
-      return this._collection(database).find({ $and: [{ archived: { $ne: true } }, query] });
+      return this._collection().find({ $and: [{ archived: { $ne: true } }, query] });
     }
 
     if (slug != null) {
-      return this._collection(database).chain()
+      return this._collection().chain()
         .find({ archived: { $ne: true } })
         .where((i) => i.slug.contains(params.slug));
     }
 
     if (name != null) {
-      return this._collection(database).chain()
+      return this._collection().chain()
         .find({ archived: { $ne: true } })
         .where((i) => i.name.contains(params.name));
     }

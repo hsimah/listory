@@ -10,10 +10,10 @@ import AddCircle from '@material-ui/icons/AddCircle';
 import React from 'react';
 import { useMutation } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
-import queries from '../../data/queries';
-import mutations from '../../data/mutations';
+import RepeatableLists from '../../pages/repeatable-lists/RepeatableLists';
+import gql from 'graphql-tag';
 
-function AddListButton() {
+export default function AddRepeatableListButton() {
   const history = useHistory();
   const [value, setValue] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -21,21 +21,21 @@ function AddListButton() {
   const handleClose = () => setOpen(false);
 
   const [addList] = useMutation(
-    mutations.ADD_LIST,
+    AddRepeatableListButton.mutations.ADD_REPEATABLE_LIST,
     {
       update(
         cache,
-        { data: { addList } }) {
-        const { lists } = cache.readQuery({ query: queries.GET_LISTS });
+        { data: { addRepeatableList } }) {
+        const { lists } = cache.readQuery({ query: RepeatableLists.queries.GET_REPEATABLE_LISTS });
         cache.writeQuery({
-          query: queries.GET_LISTS,
-          data: { list: lists.concat([addList]) },
+          query: RepeatableLists.queries.GET_REPEATABLE_LISTS,
+          data: { list: lists.concat([addRepeatableList]) },
         });
       },
       onCompleted(data) {
         handleClose();
         setValue('');
-        history.push(`/list/${data.addList.slug}`);
+        history.push(`/list/${data.addRepeatableList.slug}`);
       },
     });
 
@@ -74,4 +74,13 @@ function AddListButton() {
   </>;
 }
 
-export default AddListButton;
+AddRepeatableListButton.mutations = {
+  ADD_REPEATABLE_LIST: gql`
+  mutation AddRepeatableList($name: String!) {
+    addRepeatableList(list: {name: $name}) {
+      ...RepeatableListDetails
+    }
+  }
+  ${RepeatableLists.fragments.REPEATABLE_LIST}
+  `,
+};

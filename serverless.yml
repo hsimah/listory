@@ -46,6 +46,7 @@ plugins:
 custom:
   serverless-offline:
     httpPort: 4000
+    allowCache: false
   secrets: ${file(secrets.json)}
   customDomain:
     domainName: ${self:custom.secrets.DOMAIN}

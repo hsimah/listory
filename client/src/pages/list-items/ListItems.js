@@ -5,7 +5,6 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useQuery } from '@apollo/client';
 import { ListItemLink } from '../../components/Links';
-import queries from '../../data/queries';
 
 function ListItems() {
   const { data = { listItems: [] }, loading } = useQuery(queries.GET_LIST_ITEMS);
