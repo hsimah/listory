@@ -22,6 +22,9 @@ function RepeatableListSchemaFactory() {
       },
       Mutation: {
         addRepeatableList: (_, { list }, { repeatableLists }) => {
+          if (list.listItems == null) {
+            list.listItems = [];
+          }
           return repeatableLists.add(list);
         },
         updateRepeatableList: (_, { list }, { repeatableLists }) => {
@@ -50,9 +53,21 @@ function RepeatableListSchemaFactory() {
         addListItemToRepeatableList: (_, { input }, { repeatableLists, repeatableListItems }) => {
           const list = repeatableLists.getOne({ slug: input.slug });
           // if item exists find via slug, otherwise create with name
-          const listItem = repeatableListItems.getOne({ slug: input.item }) ??
-            repeatableListItems.add({ name: input.item });
-          list.listItems = [...list.listItems, listItem.$loki];
+          let listItem = repeatableListItems.getOne({ slug: input.item });
+          if (listItem == null) {
+            listItem = repeatableListItems.add({ name: input.item });
+          }
+          list.listItems = [...list.listItems || [], listItem.$loki];
+          return repeatableLists.update(list);
+        },
+        removeListItemToRepeatableList: (_, { input }, { repeatableLists, repeatableListItems }) => {
+          const list = repeatableLists.getOne({ slug: input.slug });
+          // if item exists remove it from the list
+          let listItem = repeatableListItems.getOne({ slug: input.item });
+          if (listItem == null) {
+            return list;
+          }
+          list.listItems = list.listItems.filter((i) => i.$loki === listItem.$loki);
           return repeatableLists.update(list);
         },
       },
@@ -60,9 +75,9 @@ function RepeatableListSchemaFactory() {
         id: (node) => node.$loki,
         name: (node) => node.name,
         archived: (node) => node.archived,
-        listItems: (node, _, { listItems }) => {
+        listItems: (node, _, { repeatableListItems }) => {
           if (node.listItems != null) {
-            return listItems.get({ id: node.listItems });
+            return repeatableListItems.get({ id: node.listItems });
           }
           return [];
         },
@@ -148,6 +163,7 @@ function RepeatableListSchemaFactory() {
       deleteRepeatableList(id: ID!): ID!
       addRepetition(where: ListWhereArgs!): RepeatableList!
       addListItemToRepeatableList(input: AddListItemToRepeatableListMutationInput!): RepeatableList!
+      removeListItemToRepeatableList(input: AddListItemToRepeatableListMutationInput!): RepeatableList!
     }
    `,
   };

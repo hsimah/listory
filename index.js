@@ -10,20 +10,15 @@ require('dotenv').config();
 const IS_DEV = process.env.NODE_ENV === 'dev';
 const clientFilesPath = path.join(__dirname, './client/build/');
 const fileHandler = new StaticFileHandler(clientFilesPath);
+const dbServer = new Database();
 const server = new ApolloServer({
   schema,
   introspection: IS_DEV,
   playground: IS_DEV,
   context: async ({ event }) => {
-    const authURI = getAuthURI(event);
-    const response = await got(authURI, { responseType: 'json', resolveBodyOnly: true });
+    const userID = !IS_DEV && authorize(event);
 
-    if (response.data.is_valid !== true) {
-      throw new AuthenticationError('Invalid access token');
-    }
-
-    const dbServer = new Database();
-    await dbServer.init();
+    const database = await dbServer.init();
 
     const [
       repeatableLists,
@@ -37,7 +32,7 @@ const server = new ApolloServer({
         'repeated-list',
         'repeated-list-item',
       ],
-      database: dbServer.database,
+      database,
     });
 
     return {
@@ -45,10 +40,10 @@ const server = new ApolloServer({
       repeatableListItems,
       repeatedLists,
       repeatedListItems,
-      database: dbServer.database,
+      database,
       user: {
-        id: response.data.user_id,
-        isValid: response.data.is_valid,
+        id: userID,
+        isValid: true,
       },
     };
   },
@@ -73,6 +68,17 @@ module.exports.html = (event, context, callback) => {
 
   return fileHandler.get(event, context);
 };
+
+async function authorize(event) {
+  const authURI = getAuthURI(event);
+  const response = await got(authURI, { responseType: 'json', resolveBodyOnly: true });
+
+  if (response.data.is_valid !== true) {
+    throw new AuthenticationError('Invalid access token');
+  }
+
+  return response.data.user_id;
+}
 
 function getAuthURI({ headers }) {
   const accessToken = `${process.env.FB_APP_ID}|${process.env.FB_APP_SECRET}`;

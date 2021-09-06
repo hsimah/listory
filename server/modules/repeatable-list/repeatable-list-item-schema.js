@@ -11,7 +11,6 @@ function RepeatableListItemSchemaFactory() {
       },
       Mutation: {
         upsertRepeatableListItem: (_, { listItem }, { repeatableListItems }) => {
-          console.log(listItem);
           if (listItem.id != null) {
             return repeatableListItems.update(listItem);
           }
