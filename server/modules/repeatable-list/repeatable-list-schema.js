@@ -47,6 +47,14 @@ function RepeatableListSchemaFactory() {
           list.lists = [...list.lists, repeatedList.$loki];
           return repeatableLists.update(list);
         },
+        addListItemToRepeatableList: (_, { input }, { repeatableLists, repeatableListItems }) => {
+          const list = repeatableLists.getOne({ slug: input.slug });
+          // if item exists find via slug, otherwise create with name
+          const listItem = repeatableListItems.getOne({ slug: input.item }) ??
+            repeatableListItems.add({ name: input.item });
+          list.listItems = [...list.listItems, listItem.$loki];
+          return repeatableLists.update(list);
+        },
       },
       RepeatableList: {
         id: (node) => node.$loki,
@@ -68,11 +76,6 @@ function RepeatableListSchemaFactory() {
         activeList: (node, _, { repeatedListItems }) => {
           return repeatedListItems.getOne({ id: node.activeList });
         },
-      },
-      RepeatableListItem: {
-        id: (node) => node.$loki,
-        name: (node) => node.name,
-        slug: (node) => node.slug,
       },
       RepeatedList: {
         id: (node) => node.$loki,
@@ -103,11 +106,6 @@ function RepeatableListSchemaFactory() {
       activeList: RepeatedList
       lists: [RepeatedList!]
     }
-    type RepeatableListItem {
-      id: ID!
-      name: String!
-      slug: String
-    }
     type RepeatedList {
       id: ID!
       completedTime: Int
@@ -128,12 +126,17 @@ function RepeatableListSchemaFactory() {
     input UpdateListInput {
       id: ID
       name: String,
+      slug: String,
       listItems: [ID!]
     }
     input ListWhereArgs {
       id: ID
       name: String
       slug: String
+    }
+    input AddListItemToRepeatableListMutationInput {
+      slug: String!
+      item: String!
     }
     extend type Query {
       repeatableLists(where: ListWhereArgs): [RepeatableList!]
@@ -144,6 +147,7 @@ function RepeatableListSchemaFactory() {
       updateRepeatableList(list: UpdateListInput!): RepeatableList!
       deleteRepeatableList(id: ID!): ID!
       addRepetition(where: ListWhereArgs!): RepeatableList!
+      addListItemToRepeatableList(input: AddListItemToRepeatableListMutationInput!): RepeatableList!
     }
    `,
   };

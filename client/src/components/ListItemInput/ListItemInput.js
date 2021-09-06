@@ -13,19 +13,19 @@ export default function ListItemInput({ onChange }) {
   const { data, loading } = useQuery(ListItemInput.queries.GET_LIST, { variables: { slug } });
 
   const listItemIds = React.useMemo(() => {
-    return (data.repeatableList.listItems || []).map((l) => l.id);
-  }, [data.repeatableList.listItems]);
+    return (data?.repeatableList?.listItems ?? []).map((l) => l.id);
+  }, [data?.repeatableList?.listItems]);
 
   const [addListItem] = useMutation(
     ListItemInput.mutations.ADD_LIST_ITEM,
     {
       update(
         cache,
-        { data: { addListItem } }) {
+        { data: { upsertRepeatableListItem } }) {
         const { listItems } = cache.readQuery({ query: ListItemInput.queries.GET_LIST });
         cache.writeQuery({
           query: ListItemInput.queries.GET_LIST,
-          data: { listItems: listItems.concat([addListItem]) },
+          data: { listItems: [...listItems, upsertRepeatableListItem] },
         });
       },
       onCompleted(data) {
@@ -33,7 +33,7 @@ export default function ListItemInput({ onChange }) {
           variables: {
             list: {
               slug,
-              listItems: [...listItemIds, data.addListItem.id],
+              listItems: [...listItemIds, data.upsertRepeatableListItem.id],
             },
           },
         });
@@ -74,7 +74,7 @@ export default function ListItemInput({ onChange }) {
 
       return filtered;
     }}
-    options={data.repeatableList?.listItems ?? []}
+    options={data?.repeatableList?.listItems ?? []}
     getOptionLabel={(option) => {
       if (typeof option === 'string') {
         return option;
@@ -94,7 +94,7 @@ export default function ListItemInput({ onChange }) {
 
 ListItemInput.fragments = {
   LIST_ITEM: gql`
-  fragment ListItemDetails on ListItem {
+  fragment ListItemInput_Details on RepeatableListItem {
     id
     name
     slug
@@ -104,9 +104,9 @@ ListItemInput.fragments = {
 
 ListItemInput.mutations = {
   ADD_LIST_ITEM: gql`
-  mutation AddListItem($name: String!) {
-    addListItem(name: $name) {
-      ...ListItemDetails
+  mutation AddRepeatableListItem($slug: String!, $item: String!) {
+    addListItemToRepeatableList(input: {slug: $slug, item: $item}) {
+      ...ListItemInput_Details
     }
   }
   ${ListItemInput.fragments.LIST_ITEM}
@@ -116,9 +116,11 @@ ListItemInput.mutations = {
 ListItemInput.queries = {
   GET_LIST: gql`
   query RepeatableListItems($slug: String!) {
-    repeatableList(list: {slug: $string}) {
+    repeatableList(where: {
+      slug: $slug
+    }) {
       listItems {
-        ...ListItemDetails
+        ...ListItemInput_Details
       }
     }
   }

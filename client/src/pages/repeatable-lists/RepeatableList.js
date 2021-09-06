@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 200,
+    width: '100%',
   },
 }));
 
@@ -65,24 +66,11 @@ export default function RepeatableList() {
     </Grid>
     <Grid item xs={8}>
       <FormControl component='fieldset' className={classes.formControl}>
-        <InputLabel>{'Type'}</InputLabel>
-        <Select
-          id='type'
-          name='type'
-          value={data.repeatableList.type}
-          onChange={handleChange}
-        >
-          <MenuItem value={'MASTER'} name='type'>{'Master'}</MenuItem>
-          <MenuItem value={'SUB'} name='type'>{'Sub'}</MenuItem>
-          <MenuItem value={'TRANSIENT'} name='type'>{'Transient'}</MenuItem>
-        </Select>
-      </FormControl>
-      <FormControl component='fieldset' className={classes.formControl}>
         <ListItemInput onChange={updateList} />
       </FormControl>
     </Grid>
     <Grid item xs={8}>
-      <ListItem items={data.repeatableList.listItems} onChange={updateList} />
+      <ListItem items={data?.repeatableList?.listItems ?? []} onChange={updateList} />
     </Grid>
   </Grid>;
 }
