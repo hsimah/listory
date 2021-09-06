@@ -1,16 +1,105 @@
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { useMutation, useQuery } from '@apollo/client';
+import { useQuery ,useMutation} from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import ListItemInput from '../../components/ListItemInput/ListItemInput';
-import ListItem from '../list/ListItem';
 import gql from 'graphql-tag';
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItemContainer from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import DeleteIcon from '@material-ui/icons/Delete';
+import ListIcon from '@material-ui/icons/List';
+
+function RepeatableListView() {
+  const { slug } = useParams();
+  const { data, loading } = useQuery(RepeatableListView.queries.GET_LIST, { variables: { slug } });
+
+  const [removeListItem] = useMutation(
+    RepeatableListView.mutations.REMOVE_LIST_ITEM,
+    {
+      update(
+        cache,
+        { data: { upsertRepeatableListItem } }) {
+        const { listItems } = cache.readQuery({ query: RepeatableListView.queries.GET_LIST, variables: { slug } });
+        cache.writeQuery({
+          query: RepeatableListView.queries.GET_LIST,
+          data: { listItems: upsertRepeatableListItem.listItems },
+        });
+      },
+    });
+
+  if (loading) return null;
+
+  return <List>
+    {data?.repeatableList?.listItems?.map((l) =>
+      <ListItemContainer key={l.id}>
+        <ListItemAvatar>
+          <Avatar>
+            <ListIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText primary={l.name} />
+        <ListItemSecondaryAction>
+          <IconButton edge='end' color='secondary' onClick={() => {
+            removeListItem({
+              variables: {
+                list: {
+                  slug,
+                  item: l.slug,
+                },
+              },
+            });
+          }}>
+            <DeleteIcon />
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItemContainer>
+    )}
+  </List>;
+}
+
+RepeatableListView.fragments = {
+  REPEATABLE_LIST_ITEMS: gql`
+  fragment RepeatableListView_Details on RepeatableList {
+    listItems {
+      id
+      name
+      slug
+    }
+  }
+  `,
+};
+
+RepeatableListView.mutations = {
+  REMOVE_LIST_ITEM: gql`
+  mutation RepeatableListView_RemoveListItemToRepeatableList($slug: String!, $item: String!) {
+    removeListItemToRepeatableList(input: {slug: $slug, item: $item}) {
+      ...RepeatableListView_Details
+    }
+  }
+  ${RepeatableListView.fragments.REPEATABLE_LIST_ITEMS}
+  `,
+};
+
+RepeatableListView.queries = {
+  GET_LIST: gql`
+  query RepeatableListView_RepeatableList($slug: String!) {
+    repeatableList(where: {
+      slug: $slug
+    }) {
+      ...RepeatableListView_Details
+    }
+  }
+  ${RepeatableListView.fragments.REPEATABLE_LIST_ITEMS}
+  `,
+};
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -46,7 +135,7 @@ export default function RepeatableList() {
       </FormControl>
     </Grid>
     <Grid item xs={8}>
-      <ListItem />
+      <RepeatableListView />
     </Grid>
   </Grid>;
 }
@@ -58,9 +147,9 @@ RepeatableList.fragments = {
     name
     slug
     archived
-    ...ListItem_Details
+    ...RepeatableListView_Details
   }
-  ${ListItem.fragments.REPEATABLE_LIST_ITEMS}
+  ${RepeatableListView.fragments.REPEATABLE_LIST_ITEMS}
   `,
 };
 
