@@ -4,6 +4,7 @@ const StaticFileHandler = require('serverless-aws-static-file-handler');
 const path = require('path');
 const Database = require('./server/database');
 const schema = require('./server/schema');
+const Api = require('./server/api');
 
 require('dotenv').config();
 
@@ -15,11 +16,32 @@ const server = new ApolloServer({
   context: async ({ event }) => {
     const authURI = getAuthURI(event);
     const response = await got(authURI, { responseType: 'json', resolveBodyOnly: true });
-    const database = new Database();
-    await database.init();
+    const dbServer = new Database();
+    await dbServer.init();
+
+    const lists = new Api({
+      name: 'repeatable-list',
+      database: dbServer.database,
+    });
+    const listItems = new Api({
+      name: 'repeatable-list-item',
+      database: dbServer.database,
+    });
+    const repeatedLists = new Api({
+      name: 'repeated-list',
+      database: dbServer.database,
+    });
+    const repeatedListItems = new Api({
+      name: 'repeated-list-item',
+      database: dbServer.database,
+    });
 
     return {
-      database: database.database,
+      lists,
+      listItems,
+      repeatedLists,
+      repeatedListItems,
+      database: dbServer.database,
       user: {
         id: response.data.user_id,
         isValid: response.data.is_valid,
