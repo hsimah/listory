@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function RepeatableList() {
-  let { slug } = useParams();
+  const { slug } = useParams();
   const classes = useStyles();
   const { data, error, loading } = useQuery(
     RepeatableList.queries.GET_REPEATABLE_LIST,
@@ -30,30 +30,6 @@ export default function RepeatableList() {
         slug,
       },
     });
-
-  const [updateList] = useMutation(
-    RepeatableList.mutations.UPDATE_REPEATABLE_LIST,
-    {
-      update(cache, { data: { updateList } }) {
-        const { list } = cache.readQuery({ query: RepeatableList.queries.GET_REPEATABLE_LIST, variables: { slug } });
-        cache.writeQuery({
-          query: RepeatableList.queries.GET_REPEATABLE_LIST,
-          data: { list: Object.assign({}, list, updateList) },
-        });
-      },
-    });
-
-  const handleChange = ({ target: { name, value } }) => {
-    const list = {
-      slug,
-      [name]: value,
-    };
-    updateList({
-      variables: {
-        list,
-      },
-    });
-  };
 
   if (loading) return null;
   if (error != null) return null;
@@ -66,32 +42,26 @@ export default function RepeatableList() {
     </Grid>
     <Grid item xs={8}>
       <FormControl component='fieldset' className={classes.formControl}>
-        <ListItemInput onChange={updateList} />
+        <ListItemInput />
       </FormControl>
     </Grid>
     <Grid item xs={8}>
-      <ListItem items={data?.repeatableList?.listItems ?? []} onChange={updateList} />
+      <ListItem />
     </Grid>
   </Grid>;
 }
 
 RepeatableList.fragments = {
   REPEATABLE_LIST: gql`
-  fragment RepeatableListDetails on RepeatableList {
+  fragment RepeatableList_Details on RepeatableList {
     id
     name
     slug
     archived
+    ...ListItem_Details
   }
+  ${ListItem.fragments.REPEATABLE_LIST_ITEMS}
   `,
-  REPEATABLE_LIST_WITH_ITEMS: gql`
-  fragment RepeatableListDetailsItems on RepeatableList {
-    listItems {
-      id
-      name
-      slug
-    }
-  }`,
 };
 
 RepeatableList.queries = {
@@ -100,22 +70,9 @@ RepeatableList.queries = {
     repeatableList(where: {
       slug: $slug
     }) {
-      ...RepeatableListDetails
+      ...RepeatableList_Details
     }
   }
   ${RepeatableList.fragments.REPEATABLE_LIST}
-  `,
-};
-
-RepeatableList.mutations = {
-  UPDATE_REPEATABLE_LIST: gql`
-  mutation UpdateList($list: UpdateListInput!) {
-    updateRepeatableList(list: $list) {
-      ...RepeatableListDetails
-      ...RepeatableListDetailsItems
-    }
-  }
-  ${RepeatableList.fragments.REPEATABLE_LIST}
-  ${RepeatableList.fragments.REPEATABLE_LIST_WITH_ITEMS}
   `,
 };

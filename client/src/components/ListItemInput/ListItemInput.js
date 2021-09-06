@@ -7,14 +7,10 @@ import gql from 'graphql-tag';
 
 const filter = createFilterOptions();
 
-export default function ListItemInput({ onChange }) {
+export default function ListItemInput() {
   const { slug } = useParams();
 
   const { data, loading } = useQuery(ListItemInput.queries.GET_LIST, { variables: { slug } });
-
-  const listItemIds = React.useMemo(() => {
-    return (data?.repeatableList?.listItems ?? []).map((l) => l.id);
-  }, [data?.repeatableList?.listItems]);
 
   const [addListItem] = useMutation(
     ListItemInput.mutations.ADD_LIST_ITEM,
@@ -22,20 +18,10 @@ export default function ListItemInput({ onChange }) {
       update(
         cache,
         { data: { upsertRepeatableListItem } }) {
-        const { listItems } = cache.readQuery({ query: ListItemInput.queries.GET_LIST });
+        const { listItems } = cache.readQuery({ query: ListItemInput.queries.GET_LIST, variables: { slug } });
         cache.writeQuery({
           query: ListItemInput.queries.GET_LIST,
           data: { listItems: [...listItems, upsertRepeatableListItem] },
-        });
-      },
-      onCompleted(data) {
-        onChange({
-          variables: {
-            list: {
-              slug,
-              listItems: [...listItemIds, data.upsertRepeatableListItem.id],
-            },
-          },
         });
       },
     });
@@ -44,23 +30,13 @@ export default function ListItemInput({ onChange }) {
 
   return <Autocomplete
     onChange={(_, newValue) => {
-      if (newValue?.id != null) {
-        onChange({
-          variables: {
-            list: {
-              slug,
-              listItems: [...listItemIds, newValue.id],
-            },
-          },
-        });
-      }
-      if (newValue?.inputValue) {
-        addListItem({
-          variables: {
-            name: newValue.inputValue,
-          },
-        });
-      }
+      const shouldUpdate = newValue?.slug != null;
+      addListItem({
+        variables: {
+          slug,
+          item: shouldUpdate ? newValue.slug : newValue.inputValue,
+        },
+      });
     }}
     filterOptions={(options, params) => {
       const filtered = filter(options, params);
@@ -104,9 +80,11 @@ ListItemInput.fragments = {
 
 ListItemInput.mutations = {
   ADD_LIST_ITEM: gql`
-  mutation AddRepeatableListItem($slug: String!, $item: String!) {
+  mutation ListItemInput_AddRepeatableListItem($slug: String!, $item: String!) {
     addListItemToRepeatableList(input: {slug: $slug, item: $item}) {
-      ...ListItemInput_Details
+      listItems {
+        ...ListItemInput_Details
+      }
     }
   }
   ${ListItemInput.fragments.LIST_ITEM}
@@ -115,7 +93,7 @@ ListItemInput.mutations = {
 
 ListItemInput.queries = {
   GET_LIST: gql`
-  query RepeatableListItems($slug: String!) {
+  query ListItemInput_RepeatableList($slug: String!) {
     repeatableList(where: {
       slug: $slug
     }) {

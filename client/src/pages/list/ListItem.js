@@ -9,12 +9,31 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ListIcon from '@material-ui/icons/List';
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import gql from 'graphql-tag';
+import { useMutation, useQuery } from '@apollo/client';
 
-function ListItem({ items, onChange }) {
-  let { slug } = useParams();
+export default function ListItem() {
+  const { slug } = useParams();
+  const { data, loading } = useQuery(ListItem.queries.GET_LIST, { variables: { slug } });
+
+  const [removeListItem] = useMutation(
+    ListItem.mutations.REMOVE_LIST_ITEM,
+    {
+      update(
+        cache,
+        { data: { upsertRepeatableListItem } }) {
+        const { listItems } = cache.readQuery({ query: ListItem.queries.GET_LIST, variables: { slug } });
+        cache.writeQuery({
+          query: ListItem.queries.GET_LIST,
+          data: { listItems: upsertRepeatableListItem.listItems },
+        });
+      },
+    });
+
+  if (loading) return null;
 
   return <List>
-    {items.map((l) =>
+    {data?.repeatableList?.listItems?.map((l) =>
       <ListItemContainer key={l.id}>
         <ListItemAvatar>
           <Avatar>
@@ -24,17 +43,11 @@ function ListItem({ items, onChange }) {
         <ListItemText primary={l.name} />
         <ListItemSecondaryAction>
           <IconButton edge='end' color='secondary' onClick={() => {
-            const listItems = items.reduce((a, c) => {
-              if (c.id !== l.id) {
-                a.push(c.id);
-              }
-              return a;
-            }, []);
-            onChange({
+            removeListItem({
               variables: {
                 list: {
                   slug,
-                  listItems,
+                  item: l.slug,
                 },
               },
             });
@@ -47,4 +60,38 @@ function ListItem({ items, onChange }) {
   </List>;
 }
 
-export default ListItem;
+ListItem.fragments = {
+  REPEATABLE_LIST_ITEMS: gql`
+  fragment ListItem_Details on RepeatableList {
+    listItems {
+      id
+      name
+      slug
+    }
+  }
+  `,
+};
+
+ListItem.mutations = {
+  REMOVE_LIST_ITEM: gql`
+  mutation ListItem_RemoveListItemToRepeatableList($slug: String!, $item: String!) {
+    removeListItemToRepeatableList(input: {slug: $slug, item: $item}) {
+      ...ListItem_Details
+    }
+  }
+  ${ListItem.fragments.REPEATABLE_LIST_ITEMS}
+  `,
+};
+
+ListItem.queries = {
+  GET_LIST: gql`
+  query ListItem_RepeatableList($slug: String!) {
+    repeatableList(where: {
+      slug: $slug
+    }) {
+      ...ListItem_Details
+    }
+  }
+  ${ListItem.fragments.REPEATABLE_LIST_ITEMS}
+  `,
+};
