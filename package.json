@@ -4,7 +4,7 @@
   "description": "",
   "main": "handler.js",
   "scripts": {
-    "start": "serverless offline --stage dev",
+    "start": "nodemon --ignore ./client/ --exec serverless offline --stage dev",
     "deploy": "serverless deploy --stage production"
   },
   "repository": {
@@ -41,6 +41,7 @@
     "eslint-plugin-jsx-a11y": "6.4.1",
     "eslint-plugin-react": "7.25.1",
     "eslint-plugin-react-hooks": "4.2.0",
+    "nodemon": "^2.0.12",
     "serverless-deployment-bucket": "1.5.1",
     "serverless-domain-manager": "5.1.5",
     "serverless-offline": "8.0.0"

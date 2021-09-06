@@ -7,12 +7,13 @@ const schema = require('./server/schema');
 const Api = require('./server/api');
 
 require('dotenv').config();
-
+const IS_DEV = process.env.NODE_ENV === 'dev';
 const clientFilesPath = path.join(__dirname, './client/build/');
 const fileHandler = new StaticFileHandler(clientFilesPath);
 const server = new ApolloServer({
   schema,
-  playground: process.env.NODE_ENV === 'dev',
+  introspection: IS_DEV,
+  playground: IS_DEV,
   context: async ({ event }) => {
     const authURI = getAuthURI(event);
     const response = await got(authURI, { responseType: 'json', resolveBodyOnly: true });
