@@ -29,8 +29,6 @@ const server = new ApolloServer({
       modules: [
         'repeatable-list',
         'repeatable-list-item',
-        'repeated-list',
-        'repeated-list-item',
       ],
       database,
     });
