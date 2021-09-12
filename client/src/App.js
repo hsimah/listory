@@ -1,10 +1,17 @@
+// @flow
 import ApolloClient from 'apollo-boost';
-import React from 'react';
-import { ApolloProvider } from '@apollo/client';
+import * as React from 'react';
 import Page from './pages/Page';
+import { Environment, Network, RecordSource, Store } from 'relay-runtime';
+import {
+  RelayEnvironmentProvider,
+  loadQuery,
+  usePreloadedQuery
+} from 'react-relay/hooks';
+import RelayEnvironment from './RelayEnvironment';
 
-function App() {
-  const [loggedIn, setLoggedIn] = React.useState(false);
+function App(): React.Element<'div'> {
+  const [loggedIn, setLoggedIn] = React.useState(null);
   const [user, setUser] = React.useState();
   const handleLogin = (response) => {
     if (response.status === 'connected') {
@@ -12,11 +19,12 @@ function App() {
       window.FB.api('/me', (userData) => {
         setUser(userData);
       });
-    } else {
-      setLoggedIn(false);
+      return;
     }
+    setLoggedIn(null);
   };
-  React.useEffect(() => {
+
+  React.useEffect((): () => void => {
     document.addEventListener('FBObjectReady', () => {
       window.FB.Event.subscribe('auth.login', handleLogin);
       window.FB.getLoginStatus(handleLogin);
@@ -28,28 +36,31 @@ function App() {
     };
   });
 
-  const isDev = process.env.NODE_ENV !== 'production';
-  const client = new ApolloClient({
-    uri: isDev ? 'http://localhost:4000/dev/graphql' : 'https://listory.hsimah.services/graphql',
-    headers: {
-      authtoken: loggedIn !== false ? loggedIn : '',
-    },
-  });
+  const Environment = React.useMemo((): ?$Call<typeof RelayEnvironment, string> => {
+    if (loggedIn != null) {
+      return RelayEnvironment(loggedIn);
+    }
+    return null;
+  }, [loggedIn]);
 
-  return <div>{loggedIn ?
-    <ApolloProvider client={client}>
-      <Page />
-    </ApolloProvider> :
-    <div
-      className='fb-login-button'
-      data-width=''
-      data-size='large'
-      data-button-type='continue_with'
-      data-layout='default'
-      data-auto-logout-link='false'
-      data-use-continue-as='false'
-    />
-  }
+  return <div>
+    {loggedIn != null && Environment != null ?
+      <RelayEnvironmentProvider environment={Environment}>
+        <React.Suspense fallback={'Loading...'}>
+          <Page />
+        </React.Suspense>
+      </RelayEnvironmentProvider>
+      :
+      <div
+        className='fb-login-button'
+        data-width=''
+        data-size='large'
+        data-button-type='continue_with'
+        data-layout='default'
+        data-auto-logout-link='false'
+        data-use-continue-as='false'
+      />
+    }
   </div>;
 }
 

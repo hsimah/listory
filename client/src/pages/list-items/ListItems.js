@@ -2,7 +2,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
+import * as React from 'react';
 import { useQuery } from '@apollo/client';
 import { ListItemLink } from '../../components/Links';
 
