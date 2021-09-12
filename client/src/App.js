@@ -1,5 +1,4 @@
 // @flow
-import ApolloClient from 'apollo-boost';
 import * as React from 'react';
 import Page from './pages/Page';
 import { Environment, Network, RecordSource, Store } from 'relay-runtime';

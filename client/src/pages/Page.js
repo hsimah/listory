@@ -75,13 +75,19 @@ export default function Page(): React.Element<'div'> {
           <Container maxWidth='lg' className={classes.container}>
             <Switch>
               <Route path='/list/:slug'>
-                <RepeatableList />
+                <React.Suspense fallback={null}>
+                  <RepeatableList />
+                </React.Suspense>
               </Route>
               <Route path='/:slug'>
-                <ActiveRepeatableList />
+                <React.Suspense fallback={null}>
+                  <ActiveRepeatableList />
+                </React.Suspense>
               </Route>
               <Route path='/'>
-                <RepeatableLists />
+                <React.Suspense fallback={null}>
+                  <RepeatableLists />
+                </React.Suspense>
               </Route>
             </Switch>
           </Container>

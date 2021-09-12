@@ -17,7 +17,8 @@ export type ActiveRepeatableListQueryResponse = {|
     +name: string,
     +activeList: ?{|
       +listItems: ?$ReadOnlyArray<{|
-        +$fragmentRefs: ActiveRepeatableListItem$ref
+        +slug: ?string,
+        +$fragmentRefs: ActiveRepeatableListItem$ref,
       |}>
     |},
   |}
@@ -37,6 +38,7 @@ query ActiveRepeatableListQuery(
     name
     activeList {
       listItems {
+        slug
         ...ActiveRepeatableListItem
       }
     }
@@ -78,6 +80,13 @@ v2 = {
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "slug",
+  "storageKey": null
 };
 return {
   "fragment": {
@@ -111,6 +120,7 @@ return {
                 "name": "listItems",
                 "plural": true,
                 "selections": [
+                  (v3/*: any*/),
                   {
                     "args": null,
                     "kind": "FragmentSpread",
@@ -160,14 +170,8 @@ return {
                 "name": "listItems",
                 "plural": true,
                 "selections": [
+                  (v3/*: any*/),
                   (v2/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "slug",
-                    "storageKey": null
-                  },
                   {
                     "alias": null,
                     "args": null,
@@ -194,16 +198,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "42216ce542c3b38c9db8a5b23256bf87",
+    "cacheID": "99e2bfabe04bde77eea92ebd92b786e4",
     "id": null,
     "metadata": {},
     "name": "ActiveRepeatableListQuery",
     "operationKind": "query",
-    "text": "query ActiveRepeatableListQuery(\n  $slug: String!\n) {\n  repeatableList(where: {slug: $slug}) {\n    name\n    activeList {\n      listItems {\n        ...ActiveRepeatableListItem\n      }\n    }\n    id\n  }\n}\n\nfragment ActiveRepeatableListItem on RepeatedListItem {\n  name\n  slug\n  completed\n}\n"
+    "text": "query ActiveRepeatableListQuery(\n  $slug: String!\n) {\n  repeatableList(where: {slug: $slug}) {\n    name\n    activeList {\n      listItems {\n        slug\n        ...ActiveRepeatableListItem\n      }\n    }\n    id\n  }\n}\n\nfragment ActiveRepeatableListItem on RepeatedListItem {\n  name\n  slug\n  completed\n}\n"
   }
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = '57ccd24ffbf34420dd5638fb0fe0b752';
+(node/*: any*/).hash = '525edd65ed116690b04859597523eb2c';
 
 module.exports = node;

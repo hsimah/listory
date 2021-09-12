@@ -31,7 +31,7 @@ type PropType = $ReadOnly<{
 }>;
 function RepeatableListItem({ fragmentRef }: PropType): React.Element<typeof List> {
   const { slug } = useParams();
-  const data = useFragment(graphql`fragment RepeatableListItem on RepeatableListItem {
+  const data = useFragment<RepeatableListItem$key>(graphql`fragment RepeatableListItem on RepeatableListItem {
     id
     name
     slug
@@ -96,17 +96,17 @@ export default function RepeatableList(): React.Element<typeof Grid> {
     });
 
   return <Grid container justify='center'>
-    <Grid item xs={6} sm={8}>
+    <Grid item xs={12} sm={8}>
       <Typography variant='h3'>
         {data.repeatableList?.name}
       </Typography>
     </Grid>
-    <Grid item xs={6} sm={8}>
+    <Grid item xs={12} sm={8}>
       <FormControl component='fieldset' className={classes.formControl}>
         <ListItemInput />
       </FormControl>
     </Grid>
-    {data.repeatableList?.listItems != null && <Grid item xs={6} sm={8}>
+    {data.repeatableList?.listItems != null && <Grid item xs={12} sm={8}>
       <List>
         {data.repeatableList.listItems.map((l: $ElementType<
           $NonMaybeType<$ElementType<

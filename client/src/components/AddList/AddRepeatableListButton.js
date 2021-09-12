@@ -1,4 +1,10 @@
 // @flow
+import type {
+  AddRepeatableListButtonMutation,
+  AddRepeatableListButtonMutationResponse
+} from './__generated__/AddRepeatableListButtonMutation.graphql';
+
+import RepeatableLists from '../../pages/repeatable-lists/RepeatableLists';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -8,15 +14,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import AddCircle from '@material-ui/icons/AddCircle';
-import * as React from 'react';
-import { useHistory } from 'react-router-dom';
-import RepeatableLists from '../../pages/repeatable-lists/RepeatableLists';
-import { useMutation } from 'react-relay';
+
 import graphql from 'babel-plugin-relay/macro';
-import type {
-  AddRepeatableListButtonMutation,
-  AddRepeatableListButtonMutationResponse
-} from './__generated__/AddRepeatableListButtonMutation.graphql';
+import * as React from 'react';
+import { useMutation } from 'react-relay';
+import { useHistory } from 'react-router-dom';
 
 export default function AddRepeatableListButton(): React.Element<typeof React.Fragment> {
   const history = useHistory();
@@ -27,11 +29,11 @@ export default function AddRepeatableListButton(): React.Element<typeof React.Fr
 
   const [commit, inFlight] = useMutation<AddRepeatableListButtonMutation>(
     graphql`
-    mutation AddRepeatableListButtonMutation($name: String!) {
-      addRepeatableList(list: {name: $name}) {
-        slug
-      }
-    }`
+      mutation AddRepeatableListButtonMutation($name: String!) {
+        addRepeatableList(list: {name: $name}) {
+          slug
+        }
+      }`
   );
 
   return <>

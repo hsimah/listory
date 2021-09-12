@@ -1,6 +1,9 @@
 // @flow
 import type { ActiveRepeatableListItem$key } from './__generated__/ActiveRepeatableListItem.graphql';
-import type { ActiveRepeatableListQuery } from './__generated__/ActiveRepeatableListQuery.graphql';
+import type {
+  ActiveRepeatableListQuery,
+  ActiveRepeatableListQueryResponse
+} from './__generated__/ActiveRepeatableListQuery.graphql';
 
 import ListItemInput from '../../components/ListItemInput/ListItemInput';
 import Avatar from '@material-ui/core/Avatar';
@@ -23,7 +26,7 @@ import {
 import { useParams } from 'react-router-dom';
 
 function ActiveRepeatableListItem({ fragmentRef }: $ReadOnly<{ fragmentRef: ActiveRepeatableListItem$key }>): React.Element<typeof SwipeableListItem> {
-  const data = useFragment(graphql`
+  const data = useFragment < ActiveRepeatableListItem$key > (graphql`
   fragment ActiveRepeatableListItem on RepeatedListItem {
     name
     slug
@@ -72,6 +75,7 @@ const useStyles = makeStyles((theme: { spacing: number=> void}): { [string]: mix
   },
 }));
 
+type ActiveRepeatableListItemType = $ElementType<$NonMaybeType<$PropertyType<$NonMaybeType<$PropertyType<$NonMaybeType<$PropertyType<ActiveRepeatableListQueryResponse, 'repeatableList'>>, 'activeList'>>, 'listItems'>>, 0>;
 export default function ActiveRepeatableList(): React.Element<typeof Grid> {
   const { slug } = useParams();
   const classes = useStyles();
@@ -83,6 +87,7 @@ export default function ActiveRepeatableList(): React.Element<typeof Grid> {
         name
         activeList {
           listItems {
+            slug
             ...ActiveRepeatableListItem
           }
         }
@@ -91,20 +96,20 @@ export default function ActiveRepeatableList(): React.Element<typeof Grid> {
     { slug });
 
   return <Grid container justify='center'>
-    <Grid item xs={6} sm={8}>
+    <Grid item xs={12} sm={8}>
       <Typography variant='h3'>
         {data.repeatableList?.name}
       </Typography>
     </Grid>
-    <Grid item xs={6} sm={8}>
+    <Grid item xs={12} sm={8}>
       <FormControl component='fieldset' className={classes.formControl}>
         <ListItemInput />
       </FormControl>
     </Grid>
-    <Grid item xs={6} sm={8}>
+    <Grid item xs={12} sm={8}>
       <List>
-        {data?.repeatableList?.activeList?.listItems?.map((l: $PropertyType<React$ElementConfig<typeof ActiveRepeatableListItem>, 'fragmentRef'>): React.Element<typeof ActiveRepeatableListItem> =>
-          <ActiveRepeatableListItem fragmentRef={l} />
+        {data?.repeatableList?.activeList?.listItems?.map((l: ActiveRepeatableListItemType): React.Element<typeof ActiveRepeatableListItem> =>
+          <ActiveRepeatableListItem key={l?.slug} fragmentRef={l} />
         )}
       </List>
     </Grid>
