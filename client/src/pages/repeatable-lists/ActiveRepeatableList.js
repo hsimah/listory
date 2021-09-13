@@ -14,15 +14,11 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import ListIcon from '@material-ui/icons/List';
-import graphql from 'babel-plugin-relay/macro';
 
+import graphql from 'babel-plugin-relay/macro';
 import SwipeableListItem from 'mui-swipeable-list-item';
 import * as React from 'react';
-import {
-  useFragment,
-  useLazyLoadQuery,
-  useMutation
-} from 'react-relay';
+import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
 import { useParams } from 'react-router-dom';
 
 function ActiveRepeatableListItem({ fragmentRef }: $ReadOnly<{ fragmentRef: ActiveRepeatableListItem$key }>): React.Element<typeof SwipeableListItem> {
@@ -100,11 +96,6 @@ export default function ActiveRepeatableList(): React.Element<typeof Grid> {
       <Typography variant='h3'>
         {data.repeatableList?.name}
       </Typography>
-    </Grid>
-    <Grid item xs={12} sm={8}>
-      <FormControl component='fieldset' className={classes.formControl}>
-        <ListItemInput />
-      </FormControl>
     </Grid>
     <Grid item xs={12} sm={8}>
       <List>

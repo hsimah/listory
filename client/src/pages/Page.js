@@ -65,9 +65,7 @@ export default function Page(): React.Element<'div'> {
               {'Listory'}
             </Button>
             <div className={classes.grow} />
-            <div className={classes.sectionDesktop}>
-              <AddRepeatableListButton />
-            </div>
+            <AddRepeatableListButton />
           </Toolbar>
         </AppBar>
         <main className={classes.content}>

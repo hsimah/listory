@@ -33,7 +33,7 @@ function App(): React.Element<'div'> {
         window.FB.Event.unsubscribe('auth.login', handleLogin);
       }
     };
-  });
+  }, []);
 
   const Environment = React.useMemo((): ?$Call<typeof RelayEnvironment, string> => {
     if (loggedIn != null) {

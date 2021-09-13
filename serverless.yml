@@ -17,7 +17,6 @@ package:
     - '!client/build/**'
     - .vscode/**
     - .env
-    - secrets.json
     
 functions:
   html:
@@ -47,9 +46,8 @@ custom:
   serverless-offline:
     httpPort: 4000
     allowCache: false
-  secrets: ${file(secrets.json)}
   customDomain:
-    domainName: ${self:custom.secrets.DOMAIN}
+    domainName: listory.hsimah.services
     basePath: ''
     stage: ${opt:stage}
     createRoute53Record: true

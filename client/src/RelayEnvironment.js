@@ -1,5 +1,4 @@
 // @flow
-import ApolloClient from 'apollo-boost';
 import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 
 let TOKEN = null;
@@ -15,7 +14,7 @@ export default function (token: string): Environment {
   });
 }
 
-async function fetchGraphQL({text}, variables) {
+async function fetchGraphQL({text}, variables): Promise<{data: mixed}> {
   if (TOKEN == null) {
     return {};
   }
@@ -31,6 +30,5 @@ async function fetchGraphQL({text}, variables) {
     }),
   });
 
-  // Get the response as JSON
   return await response.json();
 }
