@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import BaseLink from './BaseLink';
 
 function ListItemLink({ name, lists = [], slug, onDelete }) {

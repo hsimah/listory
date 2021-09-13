@@ -1,41 +1,31 @@
-import { useQuery } from '@apollo/client';
+// @flow
+import type {
+  RepeatableListsQuery,
+  RepeatableListsQueryResponse
+} from './__generated__/RepeatableListsQuery.graphql';
+
+import ListLink from '../../components/Links/ListLink';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
-import { useMutation } from '@apollo/client';
-import ListLink from '../../components/Links/ListLink';
-import gql from 'graphql-tag';
 
-export default function RepeatableLists() {
-  const { data = { repeatableLists: [] }, loading } = useQuery(RepeatableLists.queries.GET_REPEATABLE_LISTS);
+import graphql from 'babel-plugin-relay/macro';
+import * as React from 'react';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 
-  const [updateList] = useMutation(
-    RepeatableLists.mutations.UPDATE_REPEATABLE_LIST,
-    {
-      update(cache, { data: { updateList } }) {
-        const { lists } = cache.readQuery({ query: RepeatableLists.queries.GET_REPEATABLE_LISTS });
-        cache.writeQuery({
-          query: RepeatableLists.queries.GET_REPEATABLE_LISTS,
-          data: { lists: lists.filter((l) => !l.archived) },
-        });
-      },
-    });
 
-  const handleChange = (slug) => {
-    const list = {
-      slug,
-      archived: true,
-    };
-    updateList({
-      variables: {
-        list,
-      },
-    });
-  };
+type ListItemType =  $ElementType<$NonMaybeType<$PropertyType<RepeatableListsQueryResponse, 'repeatableLists'>>, 0>;
 
-  if (loading) return <CircularProgress />;
+export default function RepeatableLists(): React.Element<typeof Grid> {
+  const data = useLazyLoadQuery < RepeatableListsQuery > (graphql`
+    query RepeatableListsQuery {
+      repeatableLists {
+        id
+        ...ListLink
+      }
+    }`,
+    {});
 
   return <Grid container>
     <Grid item>
@@ -45,46 +35,8 @@ export default function RepeatableLists() {
     </Grid>
     <Grid item xs={12}>
       <List>
-        {data.repeatableLists.map((l) => <ListLink key={l.id} {...l} onDelete={handleChange} />)}
+        {data.repeatableLists?.map((l: ListItemType): React.Element<typeof ListLink> => <ListLink key={l.id} fragmentRef={l} />)}
       </List>
     </Grid>
   </Grid>;
 }
-
-RepeatableLists.fragments = {
-  REPEATABLE_LIST: gql`
-  fragment RepeatableListDetails on RepeatableList {
-    id
-    name
-    slug
-    archived
-  }
-  `,
-};
-
-RepeatableLists.queries = {
-  GET_REPEATABLE_LISTS: gql`
-  query RepeatableLists {
-    repeatableLists {
-      ...RepeatableListDetails
-    }
-  }
-  ${RepeatableLists.fragments.REPEATABLE_LIST}
-  `,
-};
-
-RepeatableLists.mutations = {
-  UPDATE_REPEATABLE_LIST: gql`
-  mutation UpdateRepeatableList($list: UpdateListInput!) {
-    updateRepeatableList(list: $list) {
-      ...RepeatableListDetails
-      listItems {
-        id
-        name
-        slug
-      }
-    }
-  }
-  ${RepeatableLists.fragments.REPEATABLE_LIST}
-  `,
-};

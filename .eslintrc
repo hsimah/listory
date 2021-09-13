@@ -5,17 +5,20 @@
       "createClass": "createReactClass",
       "pragma": "React",
       "version": "16.13.0"
+    },
+    "flowtype": {
+      "onlyFilesWithFlowAnnotation": false
     }
   },
   "root": true,
   "parser": "babel-eslint",
   "plugins": [
-    "react"
+    "react",
+    "flowtype"
   ],
   "env": {
     "amd": true,
     "browser": true,
-    "jquery": true,
     "node": true,
     "es6": true,
     "worker": true
@@ -47,7 +50,7 @@
       }
     ],
     "no-console": 0,
-    "no-debugger": 1,
+    "no-debugger": "error",
     "no-extra-semi": 1,
     "no-extra-parens": 1,
     "no-irregular-whitespace": 0,
@@ -104,6 +107,63 @@
     "object-shorthand": [
       1,
       "always"
-    ]
+    ],
+    "flowtype/boolean-style": [
+      "warn",
+      "boolean"
+    ],
+    "flowtype/define-flow-type": 1,
+    "flowtype/delimiter-dangle": [
+      "warn",
+      "never"
+    ],
+    "flowtype/generic-spacing": [
+      "warn",
+      "never"
+    ],
+    "flowtype/no-mixed": "warn",
+    "flowtype/no-primitive-constructor-types": "warn",
+    "flowtype/no-types-missing-file-annotation": 0,
+    "flowtype/no-weak-types": "warn",
+    "flowtype/object-type-delimiter": [
+      "warn",
+      "comma"
+    ],
+    "flowtype/require-parameter-type": "warn",
+    "flowtype/require-readonly-react-props": 0,
+    "flowtype/require-return-type": [
+      "warn",
+      "always",
+      {
+        "annotateUndefined": "never"
+      }
+    ],
+    "flowtype/require-valid-file-annotation": "warn",
+    "flowtype/semi": [
+      "warn",
+      "always"
+    ],
+    "flowtype/space-after-type-colon": [
+      "warn",
+      "always"
+    ],
+    "flowtype/space-before-generic-bracket": [
+      "warn",
+      "never"
+    ],
+    "flowtype/space-before-type-colon": [
+      "warn",
+      "never"
+    ],
+    "flowtype/type-id-match": [
+      "warn",
+      "^([A-Z][a-z0-9]+)+Type$"
+    ],
+    "flowtype/union-intersection-spacing": [
+      "warn",
+      "always"
+    ],
+    "flowtype/use-flow-type": 1,
+    "flowtype/valid-syntax": 1
   }
 }

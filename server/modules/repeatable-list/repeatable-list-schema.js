@@ -25,6 +25,19 @@ function RepeatableListSchemaFactory() {
           if (list.listItems == null) {
             list.listItems = [];
           }
+          if (list.lists == null) {
+            list.lists = [];
+          }
+          const activeList = {
+            listItems: list.listItems.map((item) => {
+              return {
+                name: item.name,
+                slug: item.slug,
+              };
+            }),
+          };
+          list.activeList = activeList;
+          list.lists = [activeList, ...list.lists];
           return repeatableLists.add(list);
         },
         updateRepeatableList: (_, { list }, { repeatableLists }) => {
@@ -33,21 +46,38 @@ function RepeatableListSchemaFactory() {
         deleteRepeatableList: (_, { id }, { repeatableLists }) => {
           return repeatableLists.delete({ id });
         },
-        addRepetition: (_, { where }, { repeatableLists, repeatedLists }) => {
+        addRepetition: (_, { where }, { repeatableLists }) => {
           const list = repeatableLists.getOne(where);
 
           // complete previous active list
-          const lastRepeatedList = repeatedLists.getOne({ id: list.activeList });
+          const [lastRepeatedList] = list.lists;
           lastRepeatedList.completedTime = Date.now();
-          repeatedLists.update(lastRepeatedList);
 
           // create new active list & save
-          const repeatedList = repeatedLists.add({
-            completed: false,
+          const repeatedList = {
             listItems: list.listItems != null ? list.listItems : [],
-          });
-          list.activeList = repeatedList.$loki;
-          list.lists = [...list.lists, repeatedList.$loki];
+          };
+          list.activeList = repeatedList;
+          list.lists = [repeatedList, ...list.lists];
+          return repeatableLists.update(list);
+        },
+        completeRepeatedListItem: (_, { where }, { repeatableLists }) => {
+          const list = repeatableLists.getOne({ slug: where.slug });
+          const item = list.activeList.listItems.find((i) => i.slug === where.item);
+          item.completedTime = Date.now();
+          const isListComplete = list.activeList.listItems.every((i) => i.completedTime != null);
+          if (isListComplete) {
+            // complete previous active list
+            const [lastRepeatedList, ...rest] = list.lists;
+            lastRepeatedList.completedTime = Date.now();
+
+            // create new active list & save
+            const repeatedList = {
+              listItems: list.listItems != null ? list.listItems : [],
+            };
+            list.activeList = repeatedList;
+            list.lists = [repeatedList, lastRepeatedList, ...rest];
+          }
           return repeatableLists.update(list);
         },
         addListItemToRepeatableList: (_, { input }, { repeatableLists, repeatableListItems }) => {
@@ -57,10 +87,10 @@ function RepeatableListSchemaFactory() {
           if (listItem == null) {
             listItem = repeatableListItems.add({ name: input.item });
           }
-          list.listItems = [...list.listItems || [], listItem.$loki];
+          list.listItems = [...list.listItems, listItem.$loki];
           return repeatableLists.update(list);
         },
-        removeListItemToRepeatableList: (_, { input }, { repeatableLists, repeatableListItems }) => {
+        removeListItemFromRepeatableList: (_, { input }, { repeatableLists, repeatableListItems }) => {
           const list = repeatableLists.getOne({ slug: input.slug });
           // if item exists remove it from the list
           let listItem = repeatableListItems.getOne({ slug: input.item });
@@ -88,23 +118,18 @@ function RepeatableListSchemaFactory() {
           }
           return [];
         },
-        activeList: (node, _, { repeatedListItems }) => {
-          return repeatedListItems.getOne({ id: node.activeList });
+        activeList: (node) => {
+          return node.activeList;
         },
       },
       RepeatedList: {
-        id: (node) => node.$loki,
-        listItems: (node, _, { repeatedListItems }) => {
-          if (node.listItems != null) {
-            return repeatedListItems.get({ id: node.listItems });
-          }
-          return [];
+        listItems: (node) => {
+          return node.listItems != null ? node.listItems : [];
         },
         completedTime: (node) => node.completedTime,
         completed: (node) => node.completedTime != null,
       },
       RepeatedListItem: {
-        id: (node) => node.$loki,
         name: (node) => node.name,
         slug: (node) => node.slug,
         completedTime: (node) => node.completedTime,
@@ -122,14 +147,12 @@ function RepeatableListSchemaFactory() {
       lists: [RepeatedList!]
     }
     type RepeatedList {
-      id: ID!
       completedTime: Int
       completed: Boolean!
       listItems: [RepeatedListItem!]
     }
     type RepeatedListItem {
       name: String!
-      id: ID!
       slug: String
       completedTime: Int
       completed: Boolean!
@@ -153,6 +176,10 @@ function RepeatableListSchemaFactory() {
       slug: String!
       item: String!
     }
+    input CompleteRepeatedListItemMutationInput {
+      slug: String
+      item: String
+    }
     extend type Query {
       repeatableLists(where: ListWhereArgs): [RepeatableList!]
       repeatableList(where: ListWhereArgs): RepeatableList
@@ -163,7 +190,8 @@ function RepeatableListSchemaFactory() {
       deleteRepeatableList(id: ID!): ID!
       addRepetition(where: ListWhereArgs!): RepeatableList!
       addListItemToRepeatableList(input: AddListItemToRepeatableListMutationInput!): RepeatableList!
-      removeListItemToRepeatableList(input: AddListItemToRepeatableListMutationInput!): RepeatableList!
+      removeListItemFromRepeatableList(input: AddListItemToRepeatableListMutationInput!): RepeatableList!
+      completeRepeatedListItem(where: CompleteRepeatedListItemMutationInput!): RepeatedListItem!
     }
    `,
   };

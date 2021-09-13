@@ -12,7 +12,10 @@ const config = {
     secretAccessKey: process.env.SECRET_KEY,
     bucket: 'habl-listory-01',
   },
-  collections: ['list', 'list-item'],
+  collections: [
+    'repeatable-list',
+    'repeatable-list-item',
+  ],
   collectionOptions: {
     unique: ['name', 'slug'],
     autoupdate: true,

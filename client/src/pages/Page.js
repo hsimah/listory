@@ -1,16 +1,25 @@
+import AddRepeatableListButton from '../components/AddList/AddRepeatableListButton';
+import ActiveRepeatableList from './repeatable-lists/ActiveRepeatableList';
+import RepeatableList from './repeatable-lists/RepeatableList';
+import RepeatableLists from './repeatable-lists/RepeatableLists';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
-import React from 'react';
-import { BrowserRouter as Router, Link, NavLink, Route, Switch } from 'react-router-dom';
-import RepeatableLists from './repeatable-lists/RepeatableLists';
-import AddRepeatableListButton from '../components/AddList/AddRepeatableListButton';
-import RepeatableList from './repeatable-lists/RepeatableList';
+import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
+import * as React from 'react';
+import {
+  BrowserRouter as Router,
+  Link,
+  NavLink,
+  Route,
+  Switch
+} from 'react-router-dom';
+
+// eslint-disable-next-line flowtype/no-mixed
+const useStyles = makeStyles((theme: { spacing: number=> void}): { [string]: mixed } => ({
   root: {
     display: 'flex',
   },
@@ -43,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Page() {
+export default function Page(): React.Element<'div'> {
   const classes = useStyles();
 
   return (
@@ -56,12 +65,7 @@ export default function Page() {
               {'Listory'}
             </Button>
             <div className={classes.grow} />
-            <div className={classes.sectionDesktop}>
-              {/* <Button component={NavLink} to='/' exact activeClassName={classes.active} color='inherit'>
-                {'Items'}
-              </Button> */}
-              <AddRepeatableListButton />
-            </div>
+            <AddRepeatableListButton />
           </Toolbar>
         </AppBar>
         <main className={classes.content}>
@@ -69,10 +73,19 @@ export default function Page() {
           <Container maxWidth='lg' className={classes.container}>
             <Switch>
               <Route path='/list/:slug'>
-                <RepeatableList />
+                <React.Suspense fallback={null}>
+                  <RepeatableList />
+                </React.Suspense>
+              </Route>
+              <Route path='/:slug'>
+                <React.Suspense fallback={null}>
+                  <ActiveRepeatableList />
+                </React.Suspense>
               </Route>
               <Route path='/'>
-                <RepeatableLists />
+                <React.Suspense fallback={null}>
+                  <RepeatableLists />
+                </React.Suspense>
               </Route>
             </Switch>
           </Container>
