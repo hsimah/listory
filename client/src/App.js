@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import Page from './pages/Page';
+import Page from 'pages/Page';
 import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 import {
   RelayEnvironmentProvider,
@@ -9,36 +9,47 @@ import {
 } from 'react-relay/hooks';
 import RelayEnvironment from './RelayEnvironment';
 
-function App(): React.Element<'div'> {
-  const [loggedIn, setLoggedIn] = React.useState(null);
+export default function App(): React.Element<'div'> {
+  const [loggedIn, setLoggedIn] = React.useState <? string > (null);
   const [user, setUser] = React.useState();
   const handleLogin = (response) => {
+    console.log('handleLogin')
     if (response.status === 'connected') {
+      console.log('handleLogin:connected')
       setLoggedIn(response.authResponse.accessToken);
       window.FB.api('/me', (userData) => {
         setUser(userData);
       });
       return;
     }
+    console.log('handleLogin:disconnected')
     setLoggedIn(null);
   };
 
   React.useEffect((): () => void => {
-    document.addEventListener('FBObjectReady', () => {
-      window.FB.Event.subscribe('auth.login', handleLogin);
       window.FB.getLoginStatus(handleLogin);
-    });
-    return () => {
-      if (window.FB != null) {
-        window.FB.Event.unsubscribe('auth.login', handleLogin);
-      }
-    };
+      return () => {};
+    //   console.log('FBObjectReady')
+    // document.addEventListener('FBObjectReady', () => {
+    //   console.log('FBObjectReady:connected')
+    //   debugger
+    //   window.FB.Event.subscribe('auth.login', handleLogin);
+    //   window.FB.getLoginStatus(handleLogin);
+    // });
+    // return () => {
+    //   if (window.FB != null) {
+    //     window.FB.Event.unsubscribe('auth.login', handleLogin);
+    //   }
+    // };
   }, []);
 
   const Environment = React.useMemo((): ?$Call<typeof RelayEnvironment, string> => {
+    console.log('Environment')
     if (loggedIn != null) {
+      console.log('Environment:loggedin')
       return RelayEnvironment(loggedIn);
     }
+    console.log('Environment:notloggedin')
     return null;
   }, [loggedIn]);
 
@@ -51,16 +62,15 @@ function App(): React.Element<'div'> {
       </RelayEnvironmentProvider>
       :
       <div
-        className='fb-login-button'
-        data-width=''
-        data-size='large'
-        data-button-type='continue_with'
-        data-layout='default'
-        data-auto-logout-link='false'
-        data-use-continue-as='false'
+        className="fb-login-button"
+        data-width=""
+        data-size="large"
+        data-button-type="continue_with"
+        data-layout="default"
+        data-auto-logout-link="false"
+        data-use-continue-as="true"
+        data-onlogin="checkLoginState();"
       />
     }
   </div>;
 }
-
-export default App;

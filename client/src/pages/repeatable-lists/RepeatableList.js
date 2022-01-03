@@ -25,7 +25,7 @@ import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import graphql from 'babel-plugin-relay/macro';
 import * as React from 'react';
 import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 type PropType = $ReadOnly<{
   fragmentRef: RepeatableListItem$key
@@ -79,7 +79,7 @@ const useStyles = makeStyles((theme: { spacing: number => string}): { [string]: 
 
 export default function RepeatableList(): React.Element<typeof Grid> {
   const { slug } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const classes = useStyles();
   const data = useLazyLoadQuery < RepeatableListQuery > (
     graphql`query RepeatableListQuery($slug: String!) {
@@ -113,7 +113,7 @@ export default function RepeatableList(): React.Element<typeof Grid> {
               slug,
             },
             onCompleted(data: RepeatableListMutationResponse) {
-              history.push(`/${slug}`);
+              navigate(`/${slug}`);
             },
           });
         }}>

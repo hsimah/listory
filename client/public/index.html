@@ -11,8 +11,12 @@
 </head>
 
 <body>
+  <script async defer crossorigin="anonymous"
+    src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v12.0&appId=1508875489353703&autoLogAppEvents=1"
+    nonce="Yp27gPGe"></script>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root"></div>
+
 </body>
 
 <script>
@@ -21,19 +25,23 @@
       appId: '1508875489353703',
       cookie: false,
       xfbml: true,
-      version: 'v11.0'
+      version: 'v12.0'
     });
     FB.AppEvents.logPageView();
-
+    console.log('pre:FBObjectReady')
     document.dispatchEvent(new Event('FBObjectReady'));
   };
   (function (d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) { return; }
+    if (d.getElementById(id)) return;
     js = d.createElement(s); js.id = id;
-    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1508875489353703";
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
+  function checkLoginState() {
+    console.log(arguments)
+    document.dispatchEvent(new Event('FBLoginComplete'));
+  }
 </script>
 
 </html>

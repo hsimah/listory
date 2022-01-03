@@ -18,16 +18,16 @@ import AddCircle from '@material-ui/icons/AddCircle';
 import graphql from 'babel-plugin-relay/macro';
 import * as React from 'react';
 import { useMutation } from 'react-relay';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddRepeatableListButton(): React.Element<typeof React.Fragment> {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [value, setValue] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const handleOpen = (): void => setOpen(true);
   const handleClose = (): void => setOpen(false);
 
-  const [commit, inFlight] = useMutation<AddRepeatableListButtonMutation>(
+  const [commit, inFlight] = useMutation <AddRepeatableListButtonMutation> (
     graphql`
       mutation AddRepeatableListButtonMutation($name: String!) {
         addRepeatableList(list: {name: $name}) {
@@ -65,7 +65,7 @@ export default function AddRepeatableListButton(): React.Element<typeof React.Fr
             onCompleted(data: AddRepeatableListButtonMutationResponse) {
               handleClose();
               setValue('');
-              history.push(`/list/${data.addRepeatableList.slug}`);
+              navigate(`/list/${data.addRepeatableList.slug}`);
             },
           });
         }}>

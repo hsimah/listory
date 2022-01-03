@@ -1,3 +1,4 @@
+// @flow
 import AddRepeatableListButton from '../components/AddList/AddRepeatableListButton';
 import ActiveRepeatableList from './repeatable-lists/ActiveRepeatableList';
 import RepeatableList from './repeatable-lists/RepeatableList';
@@ -15,11 +16,26 @@ import {
   Link,
   NavLink,
   Route,
-  Switch
+  Routes
 } from 'react-router-dom';
 
+type Theme = {
+  spacing: number => string,
+  mixins: {
+    toolbar: string,
+  },
+  breakpoints: {
+    [string]: string => string,
+  },
+  palette: {
+    primary: {
+      [string]: string
+    }
+  }
+}
+
 // eslint-disable-next-line flowtype/no-mixed
-const useStyles = makeStyles((theme: { spacing: number=> void}): { [string]: mixed } => ({
+const useStyles = makeStyles((theme: Theme): { [string]: mixed } => ({
   root: {
     display: 'flex',
   },
@@ -71,23 +87,17 @@ export default function Page(): React.Element<'div'> {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth='lg' className={classes.container}>
-            <Switch>
-              <Route path='/list/:slug'>
-                <React.Suspense fallback={null}>
-                  <RepeatableList />
-                </React.Suspense>
-              </Route>
-              <Route path='/:slug'>
-                <React.Suspense fallback={null}>
-                  <ActiveRepeatableList />
-                </React.Suspense>
-              </Route>
-              <Route path='/'>
-                <React.Suspense fallback={null}>
-                  <RepeatableLists />
-                </React.Suspense>
-              </Route>
-            </Switch>
+            <Routes>
+              <Route path='list/:slug' element={<React.Suspense fallback={null}>
+                <RepeatableList />
+              </React.Suspense>} />
+              <Route path=':slug' element={<React.Suspense fallback={null}>
+                <ActiveRepeatableList />
+              </React.Suspense>} />
+              <Route path='/' element={<React.Suspense fallback={null}>
+                <RepeatableLists />
+              </React.Suspense>} />
+            </Routes>
           </Container>
         </main>
       </Router>
