@@ -9,7 +9,7 @@
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
-    "mui-swipeable-list-item": "0.3.2",
+    "mui-swipeable-list-item": "^0.3.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-relay": "12.0.0",
@@ -26,12 +26,6 @@
     "flow": "flow",
     "relay": "relay-compiler --src ./src --schema ./schema.graphql"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -46,7 +40,6 @@
   },
   "devDependencies": {
     "babel-plugin-relay": "12.0.0",
-    "flow-bin": "0.168.0",
     "graphql": "15.5.3",
     "relay-compiler": "12.0.0",
     "relay-config": "12.0.0"

@@ -14,7 +14,6 @@ import * as React from 'react';
 import {
   BrowserRouter as Router,
   Link,
-  NavLink,
   Route,
   Routes
 } from 'react-router-dom';
@@ -22,17 +21,17 @@ import {
 type Theme = {
   spacing: number => string,
   mixins: {
-    toolbar: string,
+    toolbar: string
   },
   breakpoints: {
-    [string]: string => string,
+    [string]: string => string
   },
   palette: {
     primary: {
       [string]: string
     }
   }
-}
+};
 
 // eslint-disable-next-line flowtype/no-mixed
 const useStyles = makeStyles((theme: Theme): { [string]: mixed } => ({

@@ -2,9 +2,8 @@
 import type {
   AddRepeatableListButtonMutation,
   AddRepeatableListButtonMutationResponse
-} from './__generated__/AddRepeatableListButtonMutation.graphql';
+} from 'components/AddList/__generated__/AddRepeatableListButtonMutation.graphql';
 
-import RepeatableLists from '../../pages/repeatable-lists/RepeatableLists';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -27,7 +26,7 @@ export default function AddRepeatableListButton(): React.Element<typeof React.Fr
   const handleOpen = (): void => setOpen(true);
   const handleClose = (): void => setOpen(false);
 
-  const [commit, inFlight] = useMutation <AddRepeatableListButtonMutation> (
+  const [commit] = useMutation < AddRepeatableListButtonMutation > (
     graphql`
       mutation AddRepeatableListButtonMutation($name: String!) {
         addRepeatableList(list: {name: $name}) {

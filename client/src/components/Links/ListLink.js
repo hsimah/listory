@@ -1,5 +1,5 @@
 // @flow
-import type { ListLink$key } from './__generated__/ListLink.graphql';
+import type { ListLink$key } from 'components/Links/__generated__/ListLink.graphql';
 
 import BaseLink from './BaseLink';
 
@@ -10,6 +10,8 @@ import { useFragment, useMutation } from 'react-relay';
 type PropType = $ReadOnly<{
   fragmentRef: ListLink$key
 }>;
+
+const a: string = '';
 
 function ListLink({ fragmentRef }: PropType): React.Element<typeof BaseLink> {
   const data = useFragment < ListLink$key > (graphql`
@@ -22,7 +24,7 @@ function ListLink({ fragmentRef }: PropType): React.Element<typeof BaseLink> {
       }
     }`,
     fragmentRef);
-  const [commit, inFlight] = useMutation(graphql`
+  const [commit] = useMutation(graphql`
   mutation ListLinkMutation($list: UpdateListInput!) {
     updateRepeatableList(list: $list) {
       ...ListLink

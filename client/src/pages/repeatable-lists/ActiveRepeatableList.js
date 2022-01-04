@@ -1,17 +1,14 @@
 // @flow
-import type { ActiveRepeatableListItem$key } from './__generated__/ActiveRepeatableListItem.graphql';
+import type { ActiveRepeatableListItem$key } from 'pages/repeatable-lists/__generated__/ActiveRepeatableListItem.graphql';
 import type {
   ActiveRepeatableListQuery,
   ActiveRepeatableListQueryResponse
 } from './__generated__/ActiveRepeatableListQuery.graphql';
 
-import ListItemInput from '../../components/ListItemInput/ListItemInput';
 import Avatar from '@material-ui/core/Avatar';
-import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import ListIcon from '@material-ui/icons/List';
 
@@ -62,19 +59,9 @@ function ActiveRepeatableListItem({ fragmentRef }: $ReadOnly<{ fragmentRef: Acti
   />;
 }
 
-// eslint-disable-next-line flowtype/no-mixed
-const useStyles = makeStyles((theme: { spacing: number=> void}): { [string]: mixed } => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 200,
-    width: '100%',
-  },
-}));
-
 type ActiveRepeatableListItemType = $ElementType<$NonMaybeType<$PropertyType<$NonMaybeType<$PropertyType<$NonMaybeType<$PropertyType<ActiveRepeatableListQueryResponse, 'repeatableList'>>, 'activeList'>>, 'listItems'>>, 0>;
 export default function ActiveRepeatableList(): React.Element<typeof Grid> {
   const { slug } = useParams();
-  const classes = useStyles();
   const data = useLazyLoadQuery < ActiveRepeatableListQuery > (
     graphql`query ActiveRepeatableListQuery($slug: String!) {
       repeatableList(where: {

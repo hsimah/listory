@@ -4,7 +4,7 @@ import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 const IS_DEV = process.env.NODE_ENV !== 'production';
 const URI = IS_DEV ? 'http://localhost:4000/dev/graphql' : 'https://listory.hsimah.services/graphql';
 
-export default function (token: string): Environment {
+export default function RelayEnvironment(token: string): Environment {
   return new Environment({
     network: Network.create(async ({ text }, variables) => {
       const response = await fetch(URI, {

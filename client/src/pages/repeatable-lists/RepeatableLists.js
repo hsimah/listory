@@ -5,14 +5,13 @@ import type {
 } from './__generated__/RepeatableListsQuery.graphql';
 
 import ListLink from '../../components/Links/ListLink';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 
 import graphql from 'babel-plugin-relay/macro';
 import * as React from 'react';
-import { useLazyLoadQuery, useMutation } from 'react-relay';
+import { useLazyLoadQuery } from 'react-relay';
 
 
 type ListItemType =  $ElementType<$NonMaybeType<$PropertyType<RepeatableListsQueryResponse, 'repeatableLists'>>, 0>;

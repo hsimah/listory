@@ -1,5 +1,9 @@
 {
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:flowtype/recommended"
+  ],
   "settings": {
     "react": {
       "createClass": "createReactClass",
@@ -17,11 +21,8 @@
     "requireConfigFile": false
   },
   "plugins": [
-    "react",
-    "jsx",
     "flowtype",
-    "flow",
-    "typescript"
+    "react"
   ],
   "env": {
     "amd": true,
@@ -155,7 +156,7 @@
       "always"
     ],
     "flowtype/space-before-generic-bracket": [
-      "warn",
+      "error",
       "never"
     ],
     "flowtype/space-before-type-colon": [

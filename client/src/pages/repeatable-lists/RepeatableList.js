@@ -1,12 +1,12 @@
 // @flow
-import type { RepeatableListItem$key } from './__generated__/RepeatableListItem.graphql';
+import type { RepeatableListItem$key } from 'pages/repeatable-lists/__generated__/RepeatableListItem.graphql';
 import type {
   RepeatableListMutation,
   RepeatableListMutationResponse
-} from './__generated__/RepeatableListMutation.graphql';
-import type { RepeatableListQuery } from './__generated__/RepeatableListQuery.graphql';
+} from 'pages/repeatable-lists/__generated__/RepeatableListMutation.graphql';
+import type { RepeatableListQuery } from 'pages/repeatable-lists/__generated__/RepeatableListQuery.graphql';
 
-import ListItemInput from '../../components/ListItemInput/ListItemInput';
+import ListItemInput from 'components/ListItemInput/ListItemInput';
 import Avatar from '@material-ui/core/Avatar';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
@@ -37,7 +37,7 @@ function RepeatableListItem({ fragmentRef }: PropType): React.Element<typeof Lis
     name
     slug
   }`, fragmentRef);
-  const [commit, inFlight] = useMutation(graphql`
+  const [commit] = useMutation(graphql`
     mutation RepeatableListItemMutation($slug: String!, $item: String!) {
       removeListItemFromRepeatableList(input: {slug: $slug, item: $item}) {
         id

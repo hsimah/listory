@@ -3,7 +3,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
-import { useLazyLoadQuery, useFragment, useMutation } from 'react-relay';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 import type { ListItemInputMutation } from './__generated__/ListItemInputMutation.graphql';
 import type {
   ListItemInputQuery,
@@ -31,7 +31,7 @@ export default function ListItemInput(): React.Element<typeof Autocomplete> {
     }`,
     { slug });
 
-  const [commit, inFlight] = useMutation < ListItemInputMutation > (
+  const [commit] = useMutation < ListItemInputMutation > (
     graphql`
       mutation ListItemInputMutation($slug: String!, $item: String!) {
         addListItemToRepeatableList(input: {slug: $slug, item: $item}) {
