@@ -48,6 +48,6 @@
     "nodemon": "^2.0.12",
     "serverless-deployment-bucket": "1.5.1",
     "serverless-domain-manager": "5.1.5",
-    "serverless-offline": "8.0.0"
+    "serverless-offline": "12.0.3"
   }
 }
